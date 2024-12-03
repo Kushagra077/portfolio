@@ -17,24 +17,24 @@ publications:
     codeUrl: N/A
   
   - title: System and Method for Translating Sign Language into Spoken Language (202421033112)
-  venue: Intellectual Property India
-  year: "2024"
-  description: This is an androind application made for deaf and dumb people to communicate easily with other people in their language.
-  paperUrl: N/A
-  codeUrl: N/A
+    venue: Intellectual Property India
+    year: "2024"
+    description: This is an androind application made for deaf and dumb people to communicate easily with other people in their language.
+    paperUrl: N/A
+    codeUrl: N/A
 
   - title: Real-Time Detection of Manipulated Digital Images Using AI (202421033396)
-  venue: Intellectual Property India
-  year: "2024"
-  description: Idea is to detect deepfake images using AI in real-time so fraud can be prevented.
-  paperUrl: N/A
-  codeUrl: N/A
+    venue: Intellectual Property India
+    year: "2024"
+    description: Idea is to detect deepfake images using AI in real-time so fraud can be prevented.
+    paperUrl: N/A
+    codeUrl: N/A
 
   - title: Advanced Myoelectric Prosthetic Arm with Integrated Sensory Feedback and Motor-Controlled Joints (202421033382)
-  venue: Intellectual Property India
-  year: "2024"
-  description: This hardware tool helps people who have lost their arm in accident. It helps them to complete their regular day-to-day tasks with artificial arm.
-  paperUrl: N/A
-  codeUrl: N/A
+    venue: Intellectual Property India
+    year: "2024"
+    description: This hardware tool helps people who have lost their arm in accident. It helps them to complete their regular day-to-day tasks with artificial arm.
+    paperUrl: N/A
+    codeUrl: N/A
 
 ---
