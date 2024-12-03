@@ -1,7 +1,12 @@
 ---
 title: Kushagra Pandya
 subtitle: Machine Learning Engineer
-description: Passionate about developing AI solutions that solve real-world problems. Specializing in computer vision and natural language processing with 5+ years of industry experience.
+description: |
+  Hi, I'm **Kushagra Pandya**, a passionate **Machine Learning Engineer** with a strong foundation in **Artificial Intelligence**. I specialize in developing innovative solutions in **Computer Vision**, **Natural Language Processing**, and **Generative AI**, with expertise in **Python**, **Flask**, **Vision Transformers**, **APIs**, and **Docker**.
+
+  Currently, I work as an **Associate Software Engineer - AI** at TSS Consultancy, where I have contributed to projects like document classification, multilingual OCR, and AI-driven address parsing. My academic journey includes a **B.Tech in Computer Engineering with AI specialization**, during which I authored **three research papers**, contributed to **four patents**, and developed impactful projects, including an **autonomous robotic arm** and a **bionic arm for the disabled**.
+
+  I enjoy participating in hackathons, collaborating on cutting-edge AI research, and building solutions that create meaningful societal impact.
 profileImage: /images/profile.jpg
 socialLinks:
   - platform: Email
