@@ -16,5 +16,4 @@ publications:
     paperUrl: https://doi.org/example
     codeUrl: https://github.com
 
-title: Patents
 ---
