@@ -5,19 +5,19 @@ description: Passionate about developing AI solutions that solve real-world prob
 profileImage: /images/profile.jpg
 socialLinks:
   - platform: Email
-    url: mailto:contact@example.com
+    url: p.kushagra22@gmail.com
   - platform: GitHub
-    url: https://github.com
+    url: https://github.com/Kushagra077
   - platform: LinkedIn
-    url: https://linkedin.com
+    url: https://www.linkedin.com/in/kushagra-pandya/
   - platform: Kaggle
-    url: https://kaggle.com
+    url: https://www.kaggle.com/kushagrapandya
   - platform: HuggingFace
-    url: https://huggingface.co
+    url: https://huggingface.co/Kushagra77
   - platform: GoogleScholar
-    url: https://scholar.google.com
+    url: https://scholar.google.com/citations?user=HXtTZCoAAAAJ&hl=en
   - platform: ORCID
-    url: https://orcid.org
+    url: https://orcid.org/0009-0007-7695-335X
 
 expertise:
   - title: Machine Learning
