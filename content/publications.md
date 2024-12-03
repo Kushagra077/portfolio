@@ -9,32 +9,32 @@ publications:
     paperUrl: https://doi.org/10.1109/innocomp63224.2024.00127
     codeUrl: N/A
 
-  - title: Navigational Aid Device for Visually Impaired Individuals
+  - title: Navigational Aid Device for Visually Impaired Individuals (202421033107)
     venue: Intellectual Property India
     year: "2024"
     description: This device is maid for the visually impaired people to roam around easily with nevigation help.
-    paperUrl: 202421033107
+    paperUrl: N/A
     codeUrl: N/A
   
-  - title: System and Method for Translating Sign Language into Spoken Language
+  - title: System and Method for Translating Sign Language into Spoken Language (202421033112)
   venue: Intellectual Property India
   year: "2024"
   description: This is an androind application made for deaf and dumb people to communicate easily with other people in their language.
-  paperUrl: 202421033112
+  paperUrl: N/A
   codeUrl: N/A
 
-  - title: Real-Time Detection of Manipulated Digital Images Using AI
+  - title: Real-Time Detection of Manipulated Digital Images Using AI (202421033396)
   venue: Intellectual Property India
   year: "2024"
   description: Idea is to detect deepfake images using AI in real-time so fraud can be prevented.
-  paperUrl: 202421033396
+  paperUrl: N/A
   codeUrl: N/A
 
-  - title: Advanced Myoelectric Prosthetic Arm with Integrated Sensory Feedback and Motor-Controlled Joints
+  - title: Advanced Myoelectric Prosthetic Arm with Integrated Sensory Feedback and Motor-Controlled Joints (202421033382)
   venue: Intellectual Property India
   year: "2024"
   description: This hardware tool helps people who have lost their arm in accident. It helps them to complete their regular day-to-day tasks with artificial arm.
-  paperUrl: 202421033382
+  paperUrl: N/A
   codeUrl: N/A
 
 ---
