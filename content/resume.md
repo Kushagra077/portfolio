@@ -8,9 +8,9 @@ description: Download my detailed professional resume
 
 Professional Machine Learning Engineer with 2 years of experience specializing in computer vision and natural language processing. Proven track record of developing and deploying scalable AI solutions. -->
 
-## Download Resume
+<!-- ## Download Resume -->
 
-You can download my detailed resume in PDF format:
+<!-- You can download my detailed resume in PDF format: -->
 
 [Download Full Resume](/resume.pdf)
 
