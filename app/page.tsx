@@ -9,6 +9,7 @@ export default function Home() {
 
   return (
     <div className="container px-4 mx-auto">
+      <meta name="google-site-verification" content="gUzgZDyJ466pRmW4LBjpqjDPrSnE4Oq4Mv62wio-WJo" />
       <HeroSection metadata={metadata} />
       <ExpertiseSection expertise={metadata.expertise} />
       <FeaturedProjects projects={metadata.featuredProjects} />
