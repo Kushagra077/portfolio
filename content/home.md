@@ -28,8 +28,8 @@ expertise:
   - title: Machine Learning
     description: Specialized in deep learning, computer vision, and NLP with state-of-the-art models.
     icon: Brain
-  - title: Software Development
-    description: Full-stack development with modern frameworks and cloud technologies.
+  - title: Artificial Intelligence
+    description: AI development with modern frameworks and cloud technologies.
     icon: Code
   - title: Data Engineering
     description: Building scalable data pipelines and efficient data processing systems.
