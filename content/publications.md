@@ -9,9 +9,12 @@ publications:
     paperUrl: https://doi.org/10.1109/innocomp63224.2024.00127
     codeUrl: N/A
 
-  # - title: Enhancing DNA Sequence Classification Through Machine Learning: A Comparative Study on Human and Chimpanzee Genomic Data
-  #   venue: Artificial Intelligence and Emerging Technology (Global AI Summit)
-  #   year: "2024"
+  - title: Enhancing DNA Sequence Classification Through Machine Learning: A Comparative Study on Human and Chimpanzee Genomic Data
+    venue: Artificial Intelligence and Emerging Technology (Global AI Summit)
+    year: "2024"
+    description: This device is maid for the visually impaired people to roam around easily with nevigation help.
+    paperUrl: N/A
+    codeUrl: N/A
   #   description: DNA sequence classification is a major challenge in biological processing of data. The classification of DNA sequences is an important study field in bioinformatics since it allows researchers to perform genomic analysis. Through this research, we tried to analyze the performance of various machine learning (ML) algorithms in identifying DNA genes in humans and chimpanzees to find the most effective algorithm for classification of DNA sequences. The results of this research outperformed earlier studies, which had an accuracy around 98%. The dataset was preprocessed using k-mer counting, which assisted in finding key characteristics for the model's training. Naïve Bayes stood out, with an outstanding accuracy of 98.4% for human DNA and 91.4% for chimpanzee DNA. After improving the parameters, Naïve Bayes continued to improve, with human DNA accuracy increasing to 99% and chimpanzee DNA accuracy to 92% in all categories followed by Logistic Regression at 93.9% for human DNA sequences and Ridge Classifier at 90.2% for chimpanzee DNA sequences. K-Nearest Neighbors, Ridge Classifier, Logistic Regression, Decision Tree, Random Forest, Gradient Boosting, Extra Trees, XGBoost, and Naïve Bayes were among the algorithms tested, with accuracy, F1 score, precision, and recall used in assessing their performance. These findings highlight the necessity of selecting the appropriate models and tweaking their parameters to improve performance.
   #   paperUrl: https://doi.org/10.1109/GlobalAISummit62156.2024.10947774
   #   codeUrl: N/A
