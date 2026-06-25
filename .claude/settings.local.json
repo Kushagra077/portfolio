@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find /Users/kushagrapandya/Desktop/portfolio -type f -name \"*.json\" | grep -E \"\\(package|tsconfig\\)\" | head -20)",
+      "WebSearch"
+    ]
+  }
+}
