@@ -1,73 +1,72 @@
-"use client";
+import Link from 'next/link';
+import { ArrowUpRight } from 'lucide-react';
+import { Project } from '@/lib/data';
+import { SystemDiagram } from '@/components/diagrams/system-diagram';
+import { Reveal } from '@/components/motion';
 
-import Image from 'next/image';
-import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Code, ExternalLink, Rocket } from "lucide-react";
-
-interface ProjectCardProps {
-  title: string;
-  description: string;
-  tags: string[];
-  demoUrl?: string;
-  githubUrl?: string;
-  image: string;
-}
-
-export function ProjectCard({ title, description, tags, demoUrl, githubUrl, image }: ProjectCardProps) {
+export function ProjectCard({ project }: { project: Project }) {
   return (
-    <Card className="overflow-hidden hover:shadow-lg transition-all" data-aos="fade-up">
-      <div className="relative h-48 w-full">
-        <Image
-          src={image}
-          alt={title}
-          fill
-          className="object-cover"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-background/20" />
-      </div>
-      <div className="p-6">
-        <div className="flex items-center gap-3 mb-4">
-          <div className="p-2 rounded-lg bg-primary/10">
-            <Rocket className="w-6 h-6 text-primary" />
-          </div>
-          <h3 className="text-xl font-bold">{title}</h3>
-        </div>
-        
-        <div className="space-y-4">
-          <p className="text-foreground/80">{description}</p>
+    <Reveal>
+      <article className="group grid grid-cols-1 gap-8 rounded-lg border border-border bg-card p-6 transition-colors hover:border-foreground/20 sm:p-8 lg:grid-cols-5 lg:gap-10">
+        {/* Left: text */}
+        <div className="flex flex-col lg:col-span-2">
+          <p className="label-mono">
+            {project.index} / {project.category}
+          </p>
+          <h3 className="mt-3 font-display text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
+            {project.name}
+          </h3>
+          <p className="mt-3 text-[15px] leading-relaxed text-muted-foreground">
+            {project.description}
+          </p>
 
-          <div className="flex flex-wrap gap-2">
-            {tags.map((tag, index) => (
+          <div className="mt-5 flex flex-wrap gap-2">
+            {project.tech.slice(0, 5).map((t) => (
               <span
-                key={index}
-                className="px-3 py-1 rounded-full bg-secondary text-secondary-foreground text-sm"
+                key={t}
+                className="rounded-md border border-border px-2.5 py-1 font-mono text-[11px] text-muted-foreground"
               >
-                {tag}
+                {t}
               </span>
             ))}
           </div>
 
-          <div className="flex gap-4 pt-4">
-            {githubUrl && (
-              <Button variant="outline" size="sm" className="group" asChild>
-                <a href={githubUrl} target="_blank" rel="noopener noreferrer">
-                  <Code className="w-4 h-4 mr-2" />
-                  Code
-                </a>
-              </Button>
-            )}
-            {demoUrl && (
-              <Button variant="outline" size="sm" className="group" asChild>
-                <a href={demoUrl} target="_blank" rel="noopener noreferrer">
-                  <ExternalLink className="w-4 h-4 mr-2" />
-                  Demo
-                </a>
-              </Button>
-            )}
+          <div className="mt-3 flex flex-wrap gap-2">
+            {project.metrics.map((m) => (
+              <span
+                key={m}
+                className="rounded-md bg-primary/10 px-2.5 py-1 font-mono text-[11px] text-primary"
+              >
+                {m}
+              </span>
+            ))}
+          </div>
+
+          <div className="mt-auto flex flex-wrap items-center gap-5 pt-7">
+            <Link
+              href={`/projects/${project.slug}`}
+              className="inline-flex items-center gap-1.5 text-sm font-medium text-primary transition-all hover:gap-2.5"
+            >
+              Case study
+              <span aria-hidden>→</span>
+            </Link>
+            <a
+              href={project.githubUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 text-sm font-medium text-foreground transition hover:text-primary"
+            >
+              GitHub
+              <ArrowUpRight className="h-4 w-4" />
+            </a>
           </div>
         </div>
-      </div>
-    </Card>
+
+        {/* Right: diagram */}
+        <div className="flex items-center rounded-md border border-border/60 bg-background/40 p-5 lg:col-span-3">
+          <SystemDiagram diagram={project.diagram} />
+        </div>
+      </article>
+    </Reveal>
   );
 }
