@@ -18,8 +18,12 @@ export default function ExperiencePage() {
 
       <div className="mt-14 border-l border-border pl-6 sm:pl-10">
         {positions.map((p, i) => (
-          <Reveal key={p.role + p.period} delay={i * 0.05}>
-            <div className="relative pb-14 last:pb-0">
+          <Reveal
+            key={p.role + p.period}
+            delay={i * 0.05}
+            className="pb-16 last:pb-0 sm:pb-20"
+          >
+            <div className="relative">
               {/* node dot */}
               <span className="absolute -left-[33px] top-1.5 h-2.5 w-2.5 rounded-full border-2 border-background bg-primary sm:-left-[49px]" />
 

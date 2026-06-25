@@ -151,7 +151,7 @@ function RecruitRadar({ reduce }: { reduce: boolean }) {
   const scorerCx = rowX(1) + W / 2; // 271
   return (
     <motion.svg
-      viewBox="0 0 902 220"
+      viewBox="0 0 902 240"
       className="h-auto w-full"
       role="img"
       aria-label="RecruitRadar crew: JD Analyst, Resume Scorer, Interview Designer, Outreach Drafter, Tracker, with an Evidence guard branch under Resume Scorer"
