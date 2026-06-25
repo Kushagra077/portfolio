@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # dependencies
 /node_modules
 /.pnp
@@ -18,3 +19,6 @@ yarn-error.log*
 
 # editor / agent
 /.claude/
+=======
+.claude
+>>>>>>> 144a9da (add .claude to .gitignore)
