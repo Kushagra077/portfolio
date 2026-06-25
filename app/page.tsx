@@ -1,18 +1,33 @@
-import { getMarkdownContent } from '@/lib/markdown';
-import { HomeMetadata } from '@/lib/types';
-import { HeroSection } from '@/components/home/hero-section';
-import { ExpertiseSection } from '@/components/home/expertise-section';
-import { FeaturedProjects } from '@/components/home/featured-projects';
+import Link from 'next/link';
+import { projects } from '@/lib/data';
+import { Hero } from '@/components/home/hero';
+import { ProjectCard } from '@/components/projects/project-card';
+import { Reveal } from '@/components/motion';
 
 export default function Home() {
-  const { metadata } = getMarkdownContent('home') as { metadata: HomeMetadata };
-
   return (
-    <div className="container px-4 mx-auto">
-      <meta name="google-site-verification" content="gUzgZDyJ466pRmW4LBjpqjDPrSnE4Oq4Mv62wio-WJo" />
-      <HeroSection metadata={metadata} />
-      <ExpertiseSection expertise={metadata.expertise} />
-      <FeaturedProjects projects={metadata.featuredProjects} />
+    <div className="container">
+      <Hero />
+
+      <section className="pb-8">
+        <Reveal>
+          <div className="flex items-baseline justify-between border-t border-border pt-10">
+            <p className="label-mono">Selected work / 2024—2025</p>
+            <Link
+              href="/projects"
+              className="font-mono text-xs uppercase tracking-[0.12em] text-muted-foreground transition hover:text-primary"
+            >
+              All work →
+            </Link>
+          </div>
+        </Reveal>
+
+        <div className="mt-10 flex flex-col gap-8">
+          {projects.map((p) => (
+            <ProjectCard key={p.slug} project={p} />
+          ))}
+        </div>
+      </section>
     </div>
   );
 }
