@@ -22,6 +22,15 @@ function stripHtml(html = '') {
   return html.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
 }
 
+// Medium's RSS leaves `thumbnail` empty, but the post body almost always opens
+// with an image — pull the first <img> as a makeshift cover.
+function coverImage(item: FeedItem) {
+  if (item.thumbnail) return item.thumbnail;
+  const html = item.content || item.description || '';
+  const match = html.match(/<img[^>]+src=["']([^"']+)["']/i);
+  return match?.[1];
+}
+
 function formatDate(s: string) {
   const d = new Date(s);
   if (isNaN(d.getTime())) return '';
@@ -86,7 +95,9 @@ export function ArticlesFeed() {
 
   return (
     <div className="mt-14 grid gap-5 sm:grid-cols-2">
-      {state.items.map((item) => (
+      {state.items.map((item) => {
+        const cover = coverImage(item);
+        return (
         <a
           key={item.link}
           href={item.link}
@@ -94,11 +105,12 @@ export function ArticlesFeed() {
           rel="noopener noreferrer"
           className="group flex flex-col overflow-hidden rounded-lg border border-border bg-card transition hover:-translate-y-0.5 hover:border-foreground/20"
         >
-          {item.thumbnail ? (
+          {cover ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
-              src={item.thumbnail}
+              src={cover}
               alt=""
+              loading="lazy"
               className="h-44 w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
             />
           ) : (
@@ -124,7 +136,8 @@ export function ArticlesFeed() {
             </span>
           </div>
         </a>
-      ))}
+        );
+      })}
     </div>
   );
 }

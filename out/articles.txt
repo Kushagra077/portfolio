@@ -3,13 +3,13 @@
 3:HL["/_next/static/media/e4af272ccee01ff0-s.p.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
 4:HL["/_next/static/media/fc727f226c737876-s.p.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
 5:HL["/_next/static/css/79775124c6fda6ba.css","style"]
-0:["mTtrJpe9QwfmX210n6K6P",[[["",{"children":["articles",{"children":["__PAGE__",{}]}]},"$undefined","$undefined",true],"$L6",[[["$","link","0",{"rel":"stylesheet","href":"/_next/static/css/79775124c6fda6ba.css","precedence":"next"}]],"$L7"]]]]
+0:["oGuhGG5O1olFa9rFJzNjk",[[["",{"children":["articles",{"children":["__PAGE__",{}]}]},"$undefined","$undefined",true],"$L6",[[["$","link","0",{"rel":"stylesheet","href":"/_next/static/css/79775124c6fda6ba.css","precedence":"next"}]],"$L7"]]]]
 8:I{"id":4657,"chunks":["724:static/chunks/724-ab7f2839746a9170.js","916:static/chunks/916-68cd54ff2a947f01.js","496:static/chunks/496-4912443c30c543d8.js","185:static/chunks/app/layout-205cf2a7dcb01470.js"],"name":"ThemeProvider","async":false}
 9:I{"id":5832,"chunks":["724:static/chunks/724-ab7f2839746a9170.js","916:static/chunks/916-68cd54ff2a947f01.js","496:static/chunks/496-4912443c30c543d8.js","185:static/chunks/app/layout-205cf2a7dcb01470.js"],"name":"Navigation","async":false}
 a:I{"id":1443,"chunks":["272:static/chunks/webpack-5d32e21dc1ffa942.js","971:static/chunks/fd9d1056-f32de192d1859f92.js","864:static/chunks/864-de28a0e33bf8f4f3.js"],"name":"","async":false}
 b:I{"id":8639,"chunks":["272:static/chunks/webpack-5d32e21dc1ffa942.js","971:static/chunks/fd9d1056-f32de192d1859f92.js","864:static/chunks/864-de28a0e33bf8f4f3.js"],"name":"","async":false}
-d:I{"id":6195,"chunks":["982:static/chunks/982-07d00320ad69566b.js","222:static/chunks/app/articles/page-1dfa59b5525ba8dc.js"],"name":"Reveal","async":false}
-e:I{"id":8799,"chunks":["982:static/chunks/982-07d00320ad69566b.js","222:static/chunks/app/articles/page-1dfa59b5525ba8dc.js"],"name":"ArticlesFeed","async":false}
+d:I{"id":6195,"chunks":["982:static/chunks/982-07d00320ad69566b.js","222:static/chunks/app/articles/page-8440bf331d74ae8b.js"],"name":"Reveal","async":false}
+e:I{"id":8799,"chunks":["982:static/chunks/982-07d00320ad69566b.js","222:static/chunks/app/articles/page-8440bf331d74ae8b.js"],"name":"ArticlesFeed","async":false}
 f:I{"id":4724,"chunks":["982:static/chunks/982-07d00320ad69566b.js","724:static/chunks/724-ab7f2839746a9170.js","916:static/chunks/916-68cd54ff2a947f01.js","931:static/chunks/app/page-2880b0773c160b69.js"],"name":"","async":false}
 10:I{"id":9542,"chunks":["724:static/chunks/724-ab7f2839746a9170.js","916:static/chunks/916-68cd54ff2a947f01.js","496:static/chunks/496-4912443c30c543d8.js","185:static/chunks/app/layout-205cf2a7dcb01470.js"],"name":"Analytics","async":false}
 7:[["$","meta","0",{"charSet":"utf-8"}],["$","title","1",{"children":"Articles — Kushagra Pandya"}],["$","meta","2",{"name":"description","content":"Notes and deep-dives on building AI systems, synced live from Medium."}],["$","meta","3",{"name":"viewport","content":"width=device-width, initial-scale=1"}],["$","meta","4",{"name":"google-site-verification","content":"gUzgZDyJ466pRmW4LBjpqjDPrSnE4Oq4Mv62wio-WJo"}],["$","meta","5",{"name":"next-size-adjust"}]]
