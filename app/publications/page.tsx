@@ -2,6 +2,7 @@ import { ArrowUpRight } from 'lucide-react';
 import { papers, patents } from '@/lib/data';
 import { PageHeader } from '@/components/page-header';
 import { Reveal, Stagger, StaggerItem } from '@/components/motion';
+import { DemoVideo } from '@/components/publications/demo-video';
 
 export const metadata = {
   title: 'Publications — Kushagra Pandya',
@@ -68,6 +69,13 @@ export default function PublicationsPage() {
                 <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
                   {patent.description}
                 </p>
+                {patent.demoVideoId && (
+                  <DemoVideo
+                    videoId={patent.demoVideoId}
+                    title={patent.title}
+                    context={`Hackathon demo · Patent #${patent.number}`}
+                  />
+                )}
                 <p className="mt-4 font-mono text-[11px] uppercase tracking-[0.12em] text-muted-foreground/70">
                   Intellectual Property India · 2024
                 </p>

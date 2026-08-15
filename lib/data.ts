@@ -265,6 +265,8 @@ export interface Patent {
   title: string;
   number: string;
   description: string;
+  /** YouTube video id — renders an inline "Watch demo" player on the patent card. */
+  demoVideoId?: string;
 }
 
 export const papers: Paper[] = [
@@ -297,6 +299,7 @@ export const patents: Patent[] = [
     title: 'System and Method for Translating Sign Language into Spoken Language',
     number: '202421033112',
     description: 'An application that lets deaf and mute individuals communicate in their own language.',
+    demoVideoId: '9uLNXZF47R4',
   },
   {
     title: 'Real-Time Detection of Manipulated Digital Images Using AI',
