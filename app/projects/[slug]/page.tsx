@@ -61,15 +61,28 @@ export default function CaseStudyPage({ params }: { params: { slug: string } }) 
           </div>
         </Reveal>
         <Reveal delay={0.2}>
-          <a
-            href={project.githubUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-7 inline-flex items-center gap-2 rounded-md bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground transition hover:opacity-90"
-          >
-            View on GitHub
-            <ArrowUpRight className="h-4 w-4" />
-          </a>
+          <div className="mt-7 flex flex-wrap items-center gap-4">
+            <a
+              href={project.githubUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 rounded-md bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground transition hover:opacity-90"
+            >
+              View on GitHub
+              <ArrowUpRight className="h-4 w-4" />
+            </a>
+            {project.demoUrl && (
+              <a
+                href={project.demoUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 rounded-md border border-border px-5 py-2.5 text-sm font-medium text-foreground transition hover:border-foreground/30 hover:text-primary"
+              >
+                Live demo
+                <ArrowUpRight className="h-4 w-4" />
+              </a>
+            )}
+          </div>
         </Reveal>
       </section>
 

@@ -59,6 +59,17 @@ export function ProjectCard({ project }: { project: Project }) {
               GitHub
               <ArrowUpRight className="h-4 w-4" />
             </a>
+            {project.demoUrl && (
+              <a
+                href={project.demoUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 text-sm font-medium text-foreground transition hover:text-primary"
+              >
+                Live demo
+                <ArrowUpRight className="h-4 w-4" />
+              </a>
+            )}
           </div>
         </div>
 
