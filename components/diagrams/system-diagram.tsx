@@ -193,14 +193,65 @@ function RecruitRadar({ reduce }: { reduce: boolean }) {
   );
 }
 
+function FootballDetect({ reduce }: { reduce: boolean }) {
+  const rowMid = 56;
+  const labels = ['Train', 'Evaluate (gate)', 'Export ONNX', 'Quantize INT8', 'Serve (batch)'];
+  const activeIdx = 1;
+  const evalCx = rowX(1) + W / 2; // 271
+  return (
+    <motion.svg
+      viewBox="0 0 902 240"
+      className="h-auto w-full"
+      role="img"
+      aria-label="football-detect-serve pipeline: Train, Evaluate (gate), Export ONNX, Quantize INT8, Serve (batch), with a Benchmark branch under Evaluate"
+      initial={reduce ? 'show' : 'hidden'}
+      whileInView="show"
+      viewport={{ once: true, margin: '-60px' }}
+      variants={{ show: { transition: { staggerChildren: 0.1 } } }}
+    >
+      <Defs />
+      {[0, 1, 2, 3].map((i) => (
+        <Arrow key={i} from={rowX(i) + W} to={rowX(i + 1)} y={rowMid} />
+      ))}
+      {/* branch to benchmark/load test */}
+      <motion.line
+        x1={evalCx}
+        y1={rowMid + H / 2}
+        x2={evalCx}
+        y2={150}
+        stroke="hsl(var(--primary))"
+        strokeWidth={1.25}
+        markerEnd="url(#arrow-cobalt)"
+        variants={lineVariants}
+      />
+      {labels.map((label, i) => (
+        <Node key={label} label={label} x={rowX(i)} y={rowMid - H / 2} active={i === activeIdx} />
+      ))}
+      <Node label="Benchmark + load test" x={rowX(1)} y={150} />
+      <text
+        x={evalCx}
+        y={150 + H + 18}
+        textAnchor="middle"
+        className="font-mono"
+        fontSize={10}
+        fill="hsl(var(--muted-foreground))"
+      >
+        torch vs onnx-fp32 vs onnx-int8, same evaluator
+      </text>
+    </motion.svg>
+  );
+}
+
 export function SystemDiagram({ diagram }: { diagram: DiagramKey }) {
   const reduce = useReducedMotion() ?? false;
   return (
     <div className="w-full">
       {diagram === 'smartingest' ? (
         <SmartIngest reduce={reduce} />
-      ) : (
+      ) : diagram === 'recruitradar' ? (
         <RecruitRadar reduce={reduce} />
+      ) : (
+        <FootballDetect reduce={reduce} />
       )}
     </div>
   );
