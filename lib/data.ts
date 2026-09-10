@@ -71,6 +71,7 @@ export interface Project {
   tech: string[];
   metrics: string[];
   githubUrl: string;
+  demoUrl?: string;
   steps: ProjectStep[];
   highlights: string[];
 }
@@ -174,6 +175,7 @@ export const projects: Project[] = [
     tech: ['Python', 'Ultralytics YOLO26', 'PyTorch', 'ONNX Runtime', 'FastAPI', 'Docker', 'Locust'],
     metrics: ['ONNX-fp32: +1.5x throughput, free', 'INT8: no CPU speedup, -0.03–0.06 mAP', 'load-tested @ concurrency 1–16'],
     githubUrl: 'https://github.com/Kushagra077/football-detect-serve',
+    demoUrl: 'https://huggingface.co/spaces/Kushagra77/football-detect-serve',
     steps: [
       {
         title: 'Data',
