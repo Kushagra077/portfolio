@@ -3,7 +3,7 @@
 import { motion, useReducedMotion, Variants } from 'framer-motion';
 import { DiagramKey } from '@/lib/data';
 
-const W = 158;
+const W = 168;
 const H = 56;
 
 interface NodeDef {
@@ -11,6 +11,25 @@ interface NodeDef {
   x: number;
   y: number;
   active?: boolean;
+}
+
+// Long labels wrap to two lines instead of shrinking to stay legible.
+function wrapLabel(label: string): string[] {
+  if (label.length <= 15) return [label];
+  const words = label.split(' ');
+  if (words.length < 2) return [label];
+  let best = 0;
+  let bestDiff = Infinity;
+  for (let i = 1; i < words.length; i++) {
+    const a = words.slice(0, i).join(' ').length;
+    const b = words.slice(i).join(' ').length;
+    const diff = Math.abs(a - b);
+    if (diff < bestDiff) {
+      bestDiff = diff;
+      best = i;
+    }
+  }
+  return [words.slice(0, best).join(' '), words.slice(best).join(' ')];
 }
 
 const nodeVariants: Variants = {
@@ -24,6 +43,9 @@ const lineVariants: Variants = {
 };
 
 function Node({ label, x, y, active }: NodeDef) {
+  const lines = wrapLabel(label);
+  const cx = x + W / 2;
+  const cy = y + H / 2;
   return (
     <motion.g variants={nodeVariants} style={{ transformBox: 'fill-box', transformOrigin: 'center' }}>
       <rect
@@ -36,15 +58,21 @@ function Node({ label, x, y, active }: NodeDef) {
         stroke={active ? 'hsl(var(--primary))' : 'hsl(var(--border))'}
         strokeWidth={active ? 2 : 1}
       />
-      <text
-        x={x + W / 2}
-        y={y + H / 2 + 4}
-        textAnchor="middle"
-        className="font-mono"
-        fontSize={12}
-        fill="hsl(var(--foreground))"
-      >
-        {label}
+      <text x={cx} textAnchor="middle" className="font-mono" fontSize={14} fill="hsl(var(--foreground))">
+        {lines.length === 1 ? (
+          <tspan x={cx} y={cy + 5}>
+            {lines[0]}
+          </tspan>
+        ) : (
+          <>
+            <tspan x={cx} y={cy - 5}>
+              {lines[0]}
+            </tspan>
+            <tspan x={cx} y={cy + 13}>
+              {lines[1]}
+            </tspan>
+          </>
+        )}
       </text>
     </motion.g>
   );
@@ -91,7 +119,7 @@ function Defs() {
 }
 
 function rowX(i: number) {
-  return 12 + i * 180; // node left edges: 12,192,372,552,732
+  return 12 + i * 190; // node left edges: 12,202,392,582,772
 }
 
 function SmartIngest({ reduce }: { reduce: boolean }) {
@@ -102,7 +130,7 @@ function SmartIngest({ reduce }: { reduce: boolean }) {
   const validateCx = rowX(3) + W / 2; // 631
   return (
     <motion.svg
-      viewBox="0 0 902 176"
+      viewBox="0 0 940 176"
       className="h-auto w-full"
       role="img"
       aria-label="SmartIngest pipeline: Guardrails, Classify, Extract, Validate, Route, with a retry loop from Validate back to Extract"
@@ -132,7 +160,7 @@ function SmartIngest({ reduce }: { reduce: boolean }) {
         y={36}
         textAnchor="middle"
         className="font-mono"
-        fontSize={11}
+        fontSize={12}
         fill="hsl(var(--primary))"
       >
         retry on low confidence
@@ -151,7 +179,7 @@ function RecruitRadar({ reduce }: { reduce: boolean }) {
   const scorerCx = rowX(1) + W / 2; // 271
   return (
     <motion.svg
-      viewBox="0 0 902 240"
+      viewBox="0 0 940 240"
       className="h-auto w-full"
       role="img"
       aria-label="RecruitRadar crew: JD Analyst, Resume Scorer, Interview Designer, Outreach Drafter, Tracker, with an Evidence guard branch under Resume Scorer"
@@ -184,7 +212,7 @@ function RecruitRadar({ reduce }: { reduce: boolean }) {
         y={150 + H + 18}
         textAnchor="middle"
         className="font-mono"
-        fontSize={10}
+        fontSize={12}
         fill="hsl(var(--muted-foreground))"
       >
         rapidfuzz · every claim cites the resume
@@ -200,7 +228,7 @@ function FootballDetect({ reduce }: { reduce: boolean }) {
   const evalCx = rowX(1) + W / 2; // 271
   return (
     <motion.svg
-      viewBox="0 0 902 240"
+      viewBox="0 0 940 240"
       className="h-auto w-full"
       role="img"
       aria-label="football-detect-serve pipeline: Train, Evaluate (gate), Export ONNX, Quantize INT8, Serve (batch), with a Benchmark branch under Evaluate"
@@ -233,7 +261,7 @@ function FootballDetect({ reduce }: { reduce: boolean }) {
         y={150 + H + 18}
         textAnchor="middle"
         className="font-mono"
-        fontSize={10}
+        fontSize={12}
         fill="hsl(var(--muted-foreground))"
       >
         torch vs onnx-fp32 vs onnx-int8, same evaluator
