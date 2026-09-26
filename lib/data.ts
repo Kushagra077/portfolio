@@ -52,7 +52,11 @@ export const navItems = [
 
 // ---------------- Projects ----------------
 
+<<<<<<< HEAD
 export type DiagramKey = 'smartingest' | 'recruitradar' | 'footballmetrics';
+=======
+export type DiagramKey = 'smartingest' | 'recruitradar' | 'footballdetect';
+>>>>>>> 9a57c06f6aa5b8ec2814d4c3727f24f9487275b6
 
 export interface ProjectStep {
   title: string;
@@ -71,6 +75,7 @@ export interface Project {
   tech: string[];
   metrics: string[];
   githubUrl: string;
+  demoUrl?: string;
   steps: ProjectStep[];
   highlights: string[];
 }
@@ -161,6 +166,7 @@ export const projects: Project[] = [
     ],
   },
   {
+<<<<<<< HEAD
     slug: 'football-tactical-metrics',
     index: '03',
     name: 'Football Tactical Metrics',
@@ -200,6 +206,48 @@ export const projects: Project[] = [
       '168 of 190 validation checks pass; 22/22 synthetic ground-truth checks pass exactly',
       'Coverage rule: physical totals are only reported for players tracked ≥95% of the match — others get a below_coverage flag, not a misleading number',
       'Glitch-aware speed pipeline: Savitzky-Golay smoothing with jump detection removes single-frame tracking spikes before differentiating speed',
+=======
+    slug: 'football-detect-serve',
+    index: '03',
+    name: 'football-detect-serve',
+    category: 'CV SERVING PIPELINE',
+    tagline: 'YOLO26 football detector, checkpoint to endpoint',
+    description:
+      'A football object detector (ball, goalkeeper, player, referee) trained on broadcast footage, exported to ONNX, quantized to INT8, and served behind a batching FastAPI service — every optimization measured through one evaluator, not assumed.',
+    summary:
+      'A YOLO26 football detector taken from checkpoint to endpoint: trained on SoccerNet broadcast footage, exported to ONNX and quantized to INT8, then served behind a batching FastAPI service — with the same evaluator run against every backend so accuracy and latency claims are measured, not asserted.',
+    diagram: 'footballdetect',
+    tech: ['Python', 'Ultralytics YOLO26', 'PyTorch', 'ONNX Runtime', 'FastAPI', 'Docker', 'Locust'],
+    metrics: ['ONNX-fp32: +1.5x throughput, free', 'INT8: no CPU speedup, -0.03–0.06 mAP', 'load-tested @ concurrency 1–16'],
+    githubUrl: 'https://github.com/Kushagra077/football-detect-serve',
+    demoUrl: 'https://huggingface.co/spaces/Kushagra77/football-detect-serve',
+    steps: [
+      {
+        title: 'Data',
+        body: 'MOT-format tracking labels from SoccerNet broadcast footage are converted to YOLO format, then verified for class balance and bad labels before training starts.',
+      },
+      {
+        title: 'Train',
+        body: 'YOLO26 nano/small trained on broadcast football video to detect ball, goalkeeper, player and referee, with mixup added specifically to help the rare, tiny ball class.',
+      },
+      {
+        title: 'Evaluate (gate)',
+        body: 'A single evaluator computes COCO-style mAP for every backend through the same code path — cross-checked against ultralytics’ own YOLO.val() so accuracy claims are never backend-specific.',
+      },
+      {
+        title: 'Export & quantize',
+        body: 'The checkpoint is exported to ONNX fp32 and INT8, calibrated on a stratified, cross-sequence sample of real training images rather than a naive slice that would collapse onto one stadium.',
+      },
+      {
+        title: 'Serve (batched)',
+        body: 'A FastAPI service holds torch, onnx-fp32 and onnx-int8 backends at once, dynamically batching requests within a 15ms window; load-tested with Locust across concurrency and batching on/off.',
+      },
+    ],
+    highlights: [
+      'ONNX-fp32 gave 1.5x throughput for free; INT8 cost accuracy without a CPU speedup on ARM or x86 — measured, not assumed',
+      'Load testing exposed a real thread-safety bug (unsynchronized concurrent access to a non-thread-safe model) and drove a per-backend predict lock',
+      'One evaluator runs every backend through the same code path, cross-checked against ultralytics’ own evaluator to ~0.02 mAP agreement',
+>>>>>>> 9a57c06f6aa5b8ec2814d4c3727f24f9487275b6
     ],
   },
 ];
