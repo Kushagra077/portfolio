@@ -12,7 +12,7 @@ export default function Home() {
       <section className="pb-8">
         <Reveal>
           <div className="flex items-baseline justify-between border-t border-border pt-10">
-            <p className="label-mono">Selected work / 2024—2025</p>
+            <p className="label-mono">Selected work</p>
             <Link
               href="/projects"
               className="font-mono text-xs uppercase tracking-[0.12em] text-muted-foreground transition hover:text-primary"
