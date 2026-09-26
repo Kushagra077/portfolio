@@ -52,7 +52,7 @@ export const navItems = [
 
 // ---------------- Projects ----------------
 
-export type DiagramKey = 'smartingest' | 'recruitradar';
+export type DiagramKey = 'smartingest' | 'recruitradar' | 'footballmetrics';
 
 export interface ProjectStep {
   title: string;
@@ -158,6 +158,48 @@ export const projects: Project[] = [
       '~6 hours saved per role screened',
       'Deterministic, auditable scoring — no LLM-emitted numbers',
       'Evidence guard: every claim cites a verbatim resume quote',
+    ],
+  },
+  {
+    slug: 'football-tactical-metrics',
+    index: '03',
+    name: 'Football Tactical Metrics',
+    category: 'SPORTS ANALYTICS',
+    tagline: 'Provider-agnostic tactical & physical metrics from tracking data',
+    description:
+      'Turns raw player-tracking data from two different providers into validated tactical and physical metrics, checked against synthetic ground truth.',
+    summary:
+      'Player-tracking data in, validated tactical and physical metrics out — a source-agnostic pipeline that unifies two tracking providers behind one schema, then computes and validates defensive shape, space control and player physical output.',
+    diagram: 'footballmetrics',
+    tech: ['Python 3.13', 'kloppy', 'pandas', 'SciPy', 'Shapely', 'mplsoccer', 'Streamlit', 'pytest'],
+    metrics: ['168/190 checks pass', '22/22 synthetic checks', '95% coverage rule'],
+    githubUrl: 'https://github.com/Kushagra077/football-tactical-metrics',
+    steps: [
+      {
+        title: 'Ingest',
+        body: 'Metrica and SkillCorner tracking data — x/y positions for every player and the ball, 10–25 times a second — are parsed through kloppy into one unified schema.',
+      },
+      {
+        title: 'Unify',
+        body: 'The metrics layer never knows which provider a frame came from; even whether a player’s distance is reported is decided by tracking coverage, not by data source.',
+      },
+      {
+        title: 'Compute',
+        body: 'Tactical metrics (defensive line height, width, compactness, Voronoi space control, pressing) and physical metrics (distance, high-speed running, sprints) are derived from configs/metrics.yaml thresholds — never hardcoded.',
+      },
+      {
+        title: 'Validate',
+        body: 'Every metric is checked against synthetic ground truth with known answers (e.g. a straight line at 5 m/s for 10 s must return exactly 50.0 m) plus real-data checks reported rather than tuned away.',
+      },
+      {
+        title: 'Serve',
+        body: 'A Streamlit dashboard renders the Voronoi pitch-control diagram and centroid paths from precomputed files — no live model behind it, by design.',
+      },
+    ],
+    highlights: [
+      '168 of 190 validation checks pass; 22/22 synthetic ground-truth checks pass exactly',
+      'Coverage rule: physical totals are only reported for players tracked ≥95% of the match — others get a below_coverage flag, not a misleading number',
+      'Glitch-aware speed pipeline: Savitzky-Golay smoothing with jump detection removes single-frame tracking spikes before differentiating speed',
     ],
   },
 ];

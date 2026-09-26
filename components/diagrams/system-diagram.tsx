@@ -193,14 +193,65 @@ function RecruitRadar({ reduce }: { reduce: boolean }) {
   );
 }
 
+function FootballMetrics({ reduce }: { reduce: boolean }) {
+  const rowMid = 56;
+  const labels = ['Metrica / SkillCorner', 'Unified schema', 'Metrics layer', 'Validation', 'Dashboard'];
+  const activeIdx = 2;
+  const metricsCx = rowX(2) + W / 2;
+  return (
+    <motion.svg
+      viewBox="0 0 902 240"
+      className="h-auto w-full"
+      role="img"
+      aria-label="Football Tactical Metrics pipeline: Metrica / SkillCorner, Unified schema, Metrics layer, Validation, Dashboard, with a Coverage rule branch under Metrics layer"
+      initial={reduce ? 'show' : 'hidden'}
+      whileInView="show"
+      viewport={{ once: true, margin: '-60px' }}
+      variants={{ show: { transition: { staggerChildren: 0.1 } } }}
+    >
+      <Defs />
+      {[0, 1, 2, 3].map((i) => (
+        <Arrow key={i} from={rowX(i) + W} to={rowX(i + 1)} y={rowMid} />
+      ))}
+      {/* branch to coverage rule */}
+      <motion.line
+        x1={metricsCx}
+        y1={rowMid + H / 2}
+        x2={metricsCx}
+        y2={150}
+        stroke="hsl(var(--primary))"
+        strokeWidth={1.25}
+        markerEnd="url(#arrow-cobalt)"
+        variants={lineVariants}
+      />
+      {labels.map((label, i) => (
+        <Node key={label} label={label} x={rowX(i)} y={rowMid - H / 2} active={i === activeIdx} />
+      ))}
+      <Node label="Coverage rule" x={rowX(2)} y={150} />
+      <text
+        x={metricsCx}
+        y={150 + H + 18}
+        textAnchor="middle"
+        className="font-mono"
+        fontSize={10}
+        fill="hsl(var(--muted-foreground))"
+      >
+        ≥95% tracked, or the value stays empty
+      </text>
+    </motion.svg>
+  );
+}
+
 export function SystemDiagram({ diagram }: { diagram: DiagramKey }) {
   const reduce = useReducedMotion() ?? false;
   return (
     <div className="w-full">
       {diagram === 'smartingest' ? (
         <SmartIngest reduce={reduce} />
-      ) : (
+      ) : diagram === 'recruitradar' ? (
         <RecruitRadar reduce={reduce} />
+      ) : (
+        <FootballMetrics reduce={reduce} />
       )}
     </div>
   );
