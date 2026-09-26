@@ -221,19 +221,6 @@ function RecruitRadar({ reduce }: { reduce: boolean }) {
   );
 }
 
-<<<<<<< HEAD
-function FootballMetrics({ reduce }: { reduce: boolean }) {
-  const rowMid = 56;
-  const labels = ['Metrica / SkillCorner', 'Unified schema', 'Metrics layer', 'Validation', 'Dashboard'];
-  const activeIdx = 2;
-  const metricsCx = rowX(2) + W / 2;
-  return (
-    <motion.svg
-      viewBox="0 0 902 240"
-      className="h-auto w-full"
-      role="img"
-      aria-label="Football Tactical Metrics pipeline: Metrica / SkillCorner, Unified schema, Metrics layer, Validation, Dashboard, with a Coverage rule branch under Metrics layer"
-=======
 function FootballDetect({ reduce }: { reduce: boolean }) {
   const rowMid = 56;
   const labels = ['Train', 'Evaluate (gate)', 'Export ONNX', 'Quantize INT8', 'Serve (batch)'];
@@ -245,7 +232,6 @@ function FootballDetect({ reduce }: { reduce: boolean }) {
       className="h-auto w-full"
       role="img"
       aria-label="football-detect-serve pipeline: Train, Evaluate (gate), Export ONNX, Quantize INT8, Serve (batch), with a Benchmark branch under Evaluate"
->>>>>>> 9a57c06f6aa5b8ec2814d4c3727f24f9487275b6
       initial={reduce ? 'show' : 'hidden'}
       whileInView="show"
       viewport={{ once: true, margin: '-60px' }}
@@ -255,19 +241,11 @@ function FootballDetect({ reduce }: { reduce: boolean }) {
       {[0, 1, 2, 3].map((i) => (
         <Arrow key={i} from={rowX(i) + W} to={rowX(i + 1)} y={rowMid} />
       ))}
-<<<<<<< HEAD
-      {/* branch to coverage rule */}
-      <motion.line
-        x1={metricsCx}
-        y1={rowMid + H / 2}
-        x2={metricsCx}
-=======
       {/* branch to benchmark/load test */}
       <motion.line
         x1={evalCx}
         y1={rowMid + H / 2}
         x2={evalCx}
->>>>>>> 9a57c06f6aa5b8ec2814d4c3727f24f9487275b6
         y2={150}
         stroke="hsl(var(--primary))"
         strokeWidth={1.25}
@@ -277,18 +255,6 @@ function FootballDetect({ reduce }: { reduce: boolean }) {
       {labels.map((label, i) => (
         <Node key={label} label={label} x={rowX(i)} y={rowMid - H / 2} active={i === activeIdx} />
       ))}
-<<<<<<< HEAD
-      <Node label="Coverage rule" x={rowX(2)} y={150} />
-      <text
-        x={metricsCx}
-        y={150 + H + 18}
-        textAnchor="middle"
-        className="font-mono"
-        fontSize={10}
-        fill="hsl(var(--muted-foreground))"
-      >
-        ≥95% tracked, or the value stays empty
-=======
       <Node label="Benchmark + load test" x={rowX(1)} y={150} />
       <text
         x={evalCx}
@@ -299,7 +265,55 @@ function FootballDetect({ reduce }: { reduce: boolean }) {
         fill="hsl(var(--muted-foreground))"
       >
         torch vs onnx-fp32 vs onnx-int8, same evaluator
->>>>>>> 9a57c06f6aa5b8ec2814d4c3727f24f9487275b6
+      </text>
+    </motion.svg>
+  );
+}
+
+function FootballMetrics({ reduce }: { reduce: boolean }) {
+  const rowMid = 56;
+  const labels = ['Metrica / SkillCorner', 'Unified schema', 'Metrics layer', 'Validation', 'Dashboard'];
+  const activeIdx = 2;
+  const metricsCx = rowX(2) + W / 2;
+  return (
+    <motion.svg
+      viewBox="0 0 902 240"
+      className="h-auto w-full"
+      role="img"
+      aria-label="Football Tactical Metrics pipeline: Metrica / SkillCorner, Unified schema, Metrics layer, Validation, Dashboard, with a Coverage rule branch under Metrics layer"
+      initial={reduce ? 'show' : 'hidden'}
+      whileInView="show"
+      viewport={{ once: true, margin: '-60px' }}
+      variants={{ show: { transition: { staggerChildren: 0.1 } } }}
+    >
+      <Defs />
+      {[0, 1, 2, 3].map((i) => (
+        <Arrow key={i} from={rowX(i) + W} to={rowX(i + 1)} y={rowMid} />
+      ))}
+      {/* branch to coverage rule */}
+      <motion.line
+        x1={metricsCx}
+        y1={rowMid + H / 2}
+        x2={metricsCx}
+        y2={150}
+        stroke="hsl(var(--primary))"
+        strokeWidth={1.25}
+        markerEnd="url(#arrow-cobalt)"
+        variants={lineVariants}
+      />
+      {labels.map((label, i) => (
+        <Node key={label} label={label} x={rowX(i)} y={rowMid - H / 2} active={i === activeIdx} />
+      ))}
+      <Node label="Coverage rule" x={rowX(2)} y={150} />
+      <text
+        x={metricsCx}
+        y={150 + H + 18}
+        textAnchor="middle"
+        className="font-mono"
+        fontSize={10}
+        fill="hsl(var(--muted-foreground))"
+      >
+        ≥95% tracked, or the value stays empty
       </text>
     </motion.svg>
   );
@@ -313,12 +327,10 @@ export function SystemDiagram({ diagram }: { diagram: DiagramKey }) {
         <SmartIngest reduce={reduce} />
       ) : diagram === 'recruitradar' ? (
         <RecruitRadar reduce={reduce} />
-      ) : (
-<<<<<<< HEAD
-        <FootballMetrics reduce={reduce} />
-=======
+      ) : diagram === 'footballdetect' ? (
         <FootballDetect reduce={reduce} />
->>>>>>> 9a57c06f6aa5b8ec2814d4c3727f24f9487275b6
+      ) : (
+        <FootballMetrics reduce={reduce} />
       )}
     </div>
   );
