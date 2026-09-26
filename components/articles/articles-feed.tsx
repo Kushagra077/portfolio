@@ -22,13 +22,18 @@ function stripHtml(html = '') {
   return html.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
 }
 
+// Feed data comes from a third-party proxy — only let https URLs into href/src.
+function safeUrl(url?: string) {
+  return url && /^https:\/\//i.test(url) ? url : undefined;
+}
+
 // Medium's RSS leaves `thumbnail` empty, but the post body almost always opens
 // with an image — pull the first <img> as a makeshift cover.
 function coverImage(item: FeedItem) {
-  if (item.thumbnail) return item.thumbnail;
+  if (item.thumbnail) return safeUrl(item.thumbnail);
   const html = item.content || item.description || '';
   const match = html.match(/<img[^>]+src=["']([^"']+)["']/i);
-  return match?.[1];
+  return safeUrl(match?.[1]);
 }
 
 function formatDate(s: string) {
@@ -100,7 +105,7 @@ export function ArticlesFeed() {
         return (
         <a
           key={item.link}
-          href={item.link}
+          href={safeUrl(item.link) ?? `https://medium.com/@${site.mediumHandle}`}
           target="_blank"
           rel="noopener noreferrer"
           className="group flex flex-col overflow-hidden rounded-lg border border-border bg-card transition hover:-translate-y-0.5 hover:border-foreground/20"
