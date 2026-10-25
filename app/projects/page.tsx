@@ -16,7 +16,7 @@ export default function ProjectsPage() {
       <PageHeader
         eyebrow="Selected work"
         title="Things I've built and shipped."
-        subtitle="Production-grade AI systems — agentic pipelines and multi-agent applications, taken from notebook to deployment."
+        subtitle="Agentic pipelines, multi-agent systems and computer-vision models — each one with the architecture, the trade-offs and the numbers."
       />
 
       <div className="mt-14 flex flex-col gap-8">

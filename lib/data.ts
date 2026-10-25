@@ -50,6 +50,25 @@ export const navItems = [
   { href: '/articles', label: 'Articles' },
 ];
 
+// ---------------- Home highlights ----------------
+
+export interface Stat {
+  value: string;
+  label: string;
+  context: string;
+}
+
+// Proof points shown on the home page. Sourced from the experience and papers below.
+export const stats: Stat[] = [
+  { value: '60–70K', label: 'daily API hits', context: 'Document classification in production at ~0.5s latency' },
+  { value: '95%', label: 'deepfake accuracy', context: 'Detection model, optimized with ONNX and quantization' },
+  { value: '8', label: 'Indian languages', context: 'Multilingual OCR pipeline in production' },
+  { value: '2', label: 'IEEE papers', context: 'Published at INNOCOMP and Global AI Summit, 2024' },
+];
+
+// Projects featured on the home page; the full list lives on /projects.
+export const featuredProjectSlugs = ['smartingest', 'football-detect-serve'];
+
 // ---------------- Projects ----------------
 
 export type DiagramKey =
