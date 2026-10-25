@@ -3,15 +3,7 @@
 import { useEffect, useState } from 'react';
 import { ArrowUpRight } from 'lucide-react';
 import { site } from '@/lib/data';
-
-interface FeedItem {
-  title: string;
-  link: string;
-  pubDate: string;
-  thumbnail?: string;
-  description?: string;
-  content?: string;
-}
+import type { FeedItem } from '@/lib/medium';
 
 type State =
   | { status: 'loading' }
@@ -42,8 +34,12 @@ function formatDate(s: string) {
   return d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
 }
 
-export function ArticlesFeed() {
-  const [state, setState] = useState<State>({ status: 'loading' });
+export function ArticlesFeed({ initialItems = [] }: { initialItems?: FeedItem[] }) {
+  // Build-time posts render immediately; the live rss2json fetch below only
+  // upgrades them, and its failure must not replace them with an error.
+  const [state, setState] = useState<State>(
+    initialItems.length ? { status: 'ready', items: initialItems } : { status: 'loading' }
+  );
 
   useEffect(() => {
     const feed = `https://medium.com/feed/@${site.mediumHandle}`;
@@ -56,11 +52,13 @@ export function ArticlesFeed() {
         if (cancelled) return;
         if (data?.status === 'ok' && Array.isArray(data.items)) {
           setState({ status: 'ready', items: data.items });
-        } else {
+        } else if (!initialItems.length) {
           setState({ status: 'error' });
         }
       })
-      .catch(() => !cancelled && setState({ status: 'error' }));
+      .catch(() => {
+        if (!cancelled && !initialItems.length) setState({ status: 'error' });
+      });
 
     return () => {
       cancelled = true;

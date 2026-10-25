@@ -1,12 +1,15 @@
 import { PageHeader } from '@/components/page-header';
 import { ArticlesFeed } from '@/components/articles/articles-feed';
+import { getMediumPosts } from '@/lib/medium';
 
 export const metadata = {
   title: 'Articles — Kushagra Pandya',
   description: 'Notes and deep-dives on building AI systems, synced live from Medium.',
 };
 
-export default function ArticlesPage() {
+export default async function ArticlesPage() {
+  const initialItems = await getMediumPosts();
+
   return (
     <div className="container pt-16">
       <PageHeader
@@ -15,7 +18,7 @@ export default function ArticlesPage() {
         subtitle="Notes and deep-dives on building AI systems — synced live from Medium."
       />
 
-      <ArticlesFeed />
+      <ArticlesFeed initialItems={initialItems} />
     </div>
   );
 }
