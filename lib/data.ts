@@ -67,7 +67,7 @@ export const stats: Stat[] = [
 ];
 
 // Projects featured on the home page; the full list lives on /projects.
-export const featuredProjectSlugs = ['smartingest', 'football-detect-serve'];
+export const featuredProjectSlugs = ['recruitradar', 'football-team-tracker'];
 
 // ---------------- Projects ----------------
 
