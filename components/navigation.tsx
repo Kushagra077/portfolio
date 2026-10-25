@@ -22,13 +22,13 @@ export function Navigation() {
       <div className="container flex h-16 items-center justify-between">
         <Link
           href="/"
-          className="font-mono text-sm font-bold tracking-tight text-foreground"
+          className="whitespace-nowrap font-display text-xl font-semibold tracking-tight text-foreground sm:text-2xl"
           onClick={() => setIsOpen(false)}
         >
           {site.name}
         </Link>
 
-        <nav className="hidden items-center gap-8 md:flex">
+        <nav className="hidden items-center gap-8 lg:flex">
           {navItems.map((item) => {
             const active = isActive(pathname, item.href);
             return (
@@ -54,7 +54,7 @@ export function Navigation() {
           <button
             type="button"
             aria-label="Toggle menu"
-            className="inline-flex h-9 w-9 items-center justify-center rounded-md text-foreground md:hidden"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-md text-foreground lg:hidden"
             onClick={() => setIsOpen((v) => !v)}
           >
             {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -63,7 +63,7 @@ export function Navigation() {
       </div>
 
       {isOpen && (
-        <div className="border-t border-border bg-background md:hidden">
+        <div className="border-t border-border bg-background lg:hidden">
           <nav className="container flex flex-col py-4">
             {navItems.map((item) => {
               const active = isActive(pathname, item.href);
