@@ -52,7 +52,12 @@ export const navItems = [
 
 // ---------------- Projects ----------------
 
-export type DiagramKey = 'smartingest' | 'recruitradar' | 'footballdetect' | 'footballmetrics';
+export type DiagramKey =
+  | 'smartingest'
+  | 'recruitradar'
+  | 'footballdetect'
+  | 'footballmetrics'
+  | 'footballtracker';
 
 export interface ProjectStep {
   title: string;
@@ -244,6 +249,49 @@ export const projects: Project[] = [
       '168 of 190 validation checks pass; 22/22 synthetic ground-truth checks pass exactly',
       'Coverage rule: physical totals are only reported for players tracked ≥95% of the match — others get a below_coverage flag, not a misleading number',
       'Glitch-aware speed pipeline: Savitzky-Golay smoothing with jump detection removes single-frame tracking spikes before differentiating speed',
+    ],
+  },
+  {
+    slug: 'football-team-tracker',
+    index: '05',
+    name: 'Football Team Tracker',
+    category: 'VIDEO TRACKING',
+    tagline: 'Player tracking and team assignment from broadcast video',
+    description:
+      'Follows every player in a football broadcast with a fixed ID and splits them into two teams by shirt colour — and measures how much tracking quality the detector costs.',
+    summary:
+      'A computer-vision pipeline that follows each player in broadcast football video with a fixed tracker ID and assigns teams by shirt colour, abstaining when unsure. Every tracker is benchmarked twice — on perfect detections and on my own detector — so the cost of imperfect detection is measured, not guessed.',
+    diagram: 'footballtracker',
+    tech: ['Python 3.13', 'Ultralytics YOLO26', 'BoT-SORT', 'OpenCV', 'KMeans', 'TrackEval', 'Docker', 'ZeroGPU'],
+    metrics: ['HOTA 84.2 oracle → 59.0 real', '98.9% team accuracy', '~35–45 fps on M2'],
+    githubUrl: 'https://github.com/Kushagra077/football-team-tracker',
+    demoUrl: 'https://huggingface.co/spaces/Kushagra77/football-detect-serve',
+    steps: [
+      {
+        title: 'Detect',
+        body: 'The custom YOLO26 nano detector from football-detect-serve finds players, goalkeepers, referees and the ball in every frame, run at a low confidence threshold so the tracker can recover weak detections.',
+      },
+      {
+        title: 'Track',
+        body: 'BoT-SORT with camera-motion compensation assigns each player a fixed ID while they stay in shot. Broadcast cameras pan constantly, so compensating for it matters: on perfect boxes it cut ID switches from 3,524 to 1,251.',
+      },
+      {
+        title: 'Colour',
+        body: 'Each player’s torso is cropped, grass pixels are masked out by HSV hue, and the rest becomes a Lab colour histogram — a feature that holds up better than a simple mean colour.',
+      },
+      {
+        title: 'Assign teams',
+        body: 'KMeans (k=2) fit on early pitch frames splits players into two teams, and each track takes a majority vote across 12 frames either side. Referees, close-ups and ambiguous goalkeepers get no team rather than a wrong one.',
+      },
+      {
+        title: 'Export & benchmark',
+        body: 'Outputs are an annotated video and a per-frame Parquet table. Seven trackers are scored on SoccerNet-Tracking with TrackEval (HOTA, CLEAR, Identity), tuned on validation only, with the test split run once.',
+      },
+    ],
+    highlights: [
+      'Detector cost is quantified: 19–25 HOTA points lost across trackers when moving from perfect boxes to the real detector — detection is the bottleneck, not tracking',
+      'Appearance ReID was tested and rejected: it lowered HOTA by 1.3 on perfect boxes and 0.8 on real ones, so it never made it into the default pipeline',
+      'Abstention by design: the temporal vote cut team-label flips by 79%, and the system withholds a team when unsure because a wrong colour on screen looks worse than none',
     ],
   },
 ];

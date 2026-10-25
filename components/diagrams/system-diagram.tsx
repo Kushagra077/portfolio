@@ -319,6 +319,55 @@ function FootballMetrics({ reduce }: { reduce: boolean }) {
   );
 }
 
+function FootballTracker({ reduce }: { reduce: boolean }) {
+  const rowMid = 56;
+  const labels = ['Detect (YOLO26)', 'Track (BoT-SORT)', 'Torso colour', 'Team vote', 'Export'];
+  const activeIdx = 1;
+  const trackCx = rowX(1) + W / 2; // 271
+  return (
+    <motion.svg
+      viewBox="0 0 940 240"
+      className="h-auto w-full"
+      role="img"
+      aria-label="Football Team Tracker pipeline: Detect, Track, Torso colour, Team vote, Export, with an Oracle vs real benchmark branch under Track"
+      initial={reduce ? 'show' : 'hidden'}
+      whileInView="show"
+      viewport={{ once: true, margin: '-60px' }}
+      variants={{ show: { transition: { staggerChildren: 0.1 } } }}
+    >
+      <Defs />
+      {[0, 1, 2, 3].map((i) => (
+        <Arrow key={i} from={rowX(i) + W} to={rowX(i + 1)} y={rowMid} />
+      ))}
+      {/* branch to oracle-vs-real benchmark */}
+      <motion.line
+        x1={trackCx}
+        y1={rowMid + H / 2}
+        x2={trackCx}
+        y2={150}
+        stroke="hsl(var(--primary))"
+        strokeWidth={1.25}
+        markerEnd="url(#arrow-cobalt)"
+        variants={lineVariants}
+      />
+      {labels.map((label, i) => (
+        <Node key={label} label={label} x={rowX(i)} y={rowMid - H / 2} active={i === activeIdx} />
+      ))}
+      <Node label="Oracle vs real" x={rowX(1)} y={150} />
+      <text
+        x={trackCx}
+        y={150 + H + 18}
+        textAnchor="middle"
+        className="font-mono"
+        fontSize={12}
+        fill="hsl(var(--muted-foreground))"
+      >
+        perfect boxes vs my detector
+      </text>
+    </motion.svg>
+  );
+}
+
 export function SystemDiagram({ diagram }: { diagram: DiagramKey }) {
   const reduce = useReducedMotion() ?? false;
   return (
@@ -329,6 +378,8 @@ export function SystemDiagram({ diagram }: { diagram: DiagramKey }) {
         <RecruitRadar reduce={reduce} />
       ) : diagram === 'footballdetect' ? (
         <FootballDetect reduce={reduce} />
+      ) : diagram === 'footballtracker' ? (
+        <FootballTracker reduce={reduce} />
       ) : (
         <FootballMetrics reduce={reduce} />
       )}
