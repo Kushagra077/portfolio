@@ -98,6 +98,53 @@ export default function CaseStudyPage({ params }: { params: { slug: string } }) 
         </Reveal>
       </section>
 
+      {/* Results */}
+      {project.results && (
+        <section className="mt-24 max-w-4xl">
+          <Reveal>
+            <p className="label-mono">{project.results.title}</p>
+          </Reveal>
+          <Reveal delay={0.05}>
+            <div className="mt-6 overflow-x-auto rounded-lg border border-border bg-card">
+              <table className="w-full text-left text-sm">
+                {project.results.head && (
+                  <thead>
+                    <tr className="border-b border-border font-mono text-[11px] uppercase tracking-[0.12em] text-muted-foreground">
+                      {project.results.head.map((h) => (
+                        <th key={h} className="whitespace-nowrap px-5 py-3 font-medium">
+                          {h}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                )}
+                <tbody>
+                  {project.results.rows.map((row, i) => (
+                    <tr key={i} className="border-b border-border last:border-0">
+                      {row.map((cell, j) => (
+                        <td
+                          key={j}
+                          className={
+                            j === 0
+                              ? 'px-5 py-3.5 font-medium text-foreground'
+                              : 'px-5 py-3.5 text-muted-foreground'
+                          }
+                        >
+                          {cell}
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            {project.results.caption && (
+              <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{project.results.caption}</p>
+            )}
+          </Reveal>
+        </section>
+      )}
+
       {/* How it works */}
       <section className="mt-24 max-w-3xl">
         <Reveal>

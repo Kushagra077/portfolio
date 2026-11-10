@@ -24,7 +24,7 @@ export const site = {
   email: 'p.kushagra22@gmail.com',
   location: 'Rajkot, India',
   resumeUrl: '/Kushagra_Pandya_Resume.pdf',
-  bio: 'I design agentic pipelines, LLM & RAG applications, and computer-vision models — and take them from notebook to deployment. Currently building production AI at TSS Consultancy.',
+  bio: 'Computer vision, agentic pipelines and LLM applications, taken from notebook to deployment. I’m an AI engineer at TSS Consultancy, where I train, serve and improve document, face and liveness models.',
   // Medium username (without the @) — drives the live Articles feed.
   mediumHandle: 'p.kushagra22',
 };
@@ -61,14 +61,14 @@ export interface Stat {
 // Proof points shown on the home page. Sourced from the experience and papers below;
 // keep them in sync with the Experience entries.
 export const stats: Stat[] = [
-  { value: '~50K', label: 'daily API requests', context: 'Identity-document classification API: ~0.5s model inference, ~1.5s end to end' },
-  { value: '98.92%', label: 'document-classification accuracy', context: 'Measured on a ~3K-image in-house benchmark covering every input type' },
-  { value: '89%', label: 'passive liveness accuracy', context: 'Average over open datasets held out of training; 93% on the training-source split' },
-  { value: '2', label: 'IEEE papers', context: 'Published at INNOCOMP and Global AI Summit, 2024' },
+  { value: '~50K', label: 'API requests per day', context: 'Document classification and detection in production, ~0.5s model inference' },
+  { value: '98.92%', label: 'classification accuracy', context: 'Measured on a ~3K-image in-house benchmark' },
+  { value: '89%', label: 'liveness accuracy', context: 'Passive liveness, average over held-out benchmark datasets' },
+  { value: '2 + 4', label: 'IEEE papers and patents', context: 'First author on both papers; 1 patent granted, 3 published' },
 ];
 
 // Projects featured on the home page; the full list lives on /projects.
-export const featuredProjectSlugs = ['recruitradar', 'football-team-tracker'];
+export const featuredProjectSlugs = ['football-detect-serve', 'football-team-tracker', 'smartingest'];
 
 // ---------------- Projects ----------------
 
@@ -97,8 +97,17 @@ export interface Project {
   metrics: string[];
   githubUrl: string;
   demoUrl?: string;
+  /** Optional results table shown above "How it works". */
+  results?: ProjectResults;
   steps: ProjectStep[];
   highlights: string[];
+}
+
+export interface ProjectResults {
+  title: string;
+  head?: string[];
+  rows: string[][];
+  caption?: string;
 }
 
 export const projects: Project[] = [
@@ -152,12 +161,12 @@ export const projects: Project[] = [
     category: 'MULTI-AGENT SYSTEM',
     tagline: 'Multi-agent recruitment screener',
     description:
-      'A CrewAI multi-agent screener that ranks resumes against a JD with a score computed in Python and skill claims checked against the resume text.',
+      'A CrewAI multi-agent screener that scores resumes against a job description with deterministic, evidence-backed results, built to cut manual screening time.',
     summary:
-      'A five-agent CrewAI recruitment screener: it reads a JD and a folder of PDF, DOCX or scanned resumes, ranks candidates 0–100 with a per-criterion breakdown, drafts interview kits and outreach emails, and tracks each candidate in a persistent SQLite pipeline. The total score is arithmetic in Python, and any skill claim the resume text does not support is dropped before it counts.',
+      'A five-agent CrewAI recruitment screener: it reads a JD and a folder of PDF, DOCX or scanned resumes, ranks candidates 0–100 with a per-criterion breakdown, drafts interview kits and outreach emails, and tracks each candidate in a persistent SQLite pipeline. The total score is arithmetic in Python, and any skill claim the resume text does not support is dropped before it counts. Built to cut the time recruiters spend screening; I estimate about 6 hours per role (an estimate, not a measurement).',
     diagram: 'recruitradar',
-    tech: ['Python', 'CrewAI', 'Gemini', 'Groq', 'LiteLLM', 'Pydantic', 'rapidfuzz', 'SQLModel', 'SQLite', 'Streamlit', 'Tesseract'],
-    metrics: ['5 CrewAI agents', 'score computed in Python', '35 network-free tests'],
+    tech: ['Python', 'CrewAI', 'Gemini', 'Groq', 'LiteLLM', 'Pydantic', 'rapidfuzz', 'SQLModel', 'SQLite', 'Streamlit', 'PyMuPDF', 'Tesseract'],
+    metrics: ['~6 hrs/role (my estimate)', 'score computed in Python', '35 network-free tests'],
     githubUrl: 'https://github.com/Kushagra077/RecruitRadar',
     demoUrl: 'https://youtu.be/4_sv16UfuZM',
     steps: [
@@ -199,12 +208,25 @@ export const projects: Project[] = [
     summary:
       'A YOLO26 football detector taken from checkpoint to endpoint: trained on SoccerNet broadcast footage, exported to ONNX, and served as four presets (test mAP50-95 0.400 to 0.477) behind a batching FastAPI service. One evaluator scores every backend, so the ONNX, INT8 and batching results are measured on the same code path, including the ones that did not pay off.',
     diagram: 'footballdetect',
-    tech: ['Python', 'Ultralytics YOLO26', 'PyTorch', 'ONNX Runtime', 'FastAPI', 'Gradio', 'Docker', 'Locust', 'Prometheus', 'GitHub Actions'],
+    tech: ['Python', 'Ultralytics YOLO26', 'PyTorch', 'ONNX Runtime', 'FastAPI', 'Gradio', 'Docker', 'Locust', 'Prometheus', 'GitHub Actions', 'Hugging Face Spaces'],
     metrics: [
       '4 presets: 0.400–0.477 test mAP50-95',
       'ONNX fp32: 1.5x torch, no accuracy loss',
       'INT8: slower on ARM and x86, -0.03 to -0.06 mAP',
+      'load-tested at concurrency 1–16',
     ],
+    results: {
+      title: 'Four presets',
+      head: ['Preset', 'Model', 'Input', 'Test mAP50-95', 'Latency (batch 1, p50)'],
+      rows: [
+        ['fast', 'YOLO26 nano (v3)', '640', '0.400', '~16 ms'],
+        ['balanced', 'YOLO26 nano (v7)', '960', '0.430', '~33 ms'],
+        ['accurate', 'YOLO26 nano (v6)', '1280', '0.459', '~60 ms'],
+        ['max', 'YOLO26 small (v13)', '1280', '0.477', '~177 ms'],
+      ],
+      caption:
+        'ONNX fp32 on CPU (Apple M2, 4 threads), real 1080p frames. A request picks a preset with ?backend=fast|balanced|accurate|max. The ball is the hardest class at every size (AP 0.111 to 0.199).',
+    },
     githubUrl: 'https://github.com/Kushagra077/football-detect-serve',
     demoUrl: 'https://huggingface.co/spaces/Kushagra77/football-detect-serve',
     steps: [
@@ -289,7 +311,19 @@ export const projects: Project[] = [
       'A computer-vision pipeline that follows each player in broadcast football video with a fixed tracker ID and assigns teams by shirt colour, abstaining when unsure. Seven trackers are scored on SoccerNet-Tracking twice, on perfect boxes and on my own detector, so the cost of imperfect detection is measured rather than guessed. Tuned on validation clips only; the 49-clip test split was run once.',
     diagram: 'footballtracker',
     tech: ['Python 3.13', 'Ultralytics YOLO26', 'BoT-SORT', 'OpenCV', 'KMeans', 'TrackEval', 'Docker', 'GitHub Actions', 'ZeroGPU'],
-    metrics: ['HOTA 84.2 oracle → 63.6 real', '99.0% team accuracy', '7 trackers, 49 test clips'],
+    metrics: ['HOTA 84.2 oracle → 63.6 real', '99.0% team accuracy', '7 trackers benchmarked'],
+    results: {
+      title: 'Headline result',
+      rows: [
+        ['Best tracker', 'BoT-SORT with camera-motion compensation'],
+        ['HOTA with perfect boxes (oracle)', '84.2'],
+        ['HOTA with my detector', '63.6 (59.0 with my first detector)'],
+        ['Players given the correct team', '99.0%'],
+        ['Test set', 'SoccerNet-Tracking test split, 49 clips, run once'],
+      ],
+      caption:
+        'Scored with my own thin wrapper around TrackEval, persons only, so these numbers are not directly comparable to the SoccerNet leaderboard.',
+    },
     githubUrl: 'https://github.com/Kushagra077/football-team-tracker',
     demoUrl: 'https://huggingface.co/spaces/Kushagra77/football-detect-serve',
     steps: [
@@ -311,7 +345,7 @@ export const projects: Project[] = [
       },
       {
         title: 'Export & benchmark',
-        body: 'Output is an annotated video plus a schema-validated per-frame Parquet table (frame, track ID, team, role, box, confidence). Seven trackers are scored with TrackEval’s HOTA, CLEAR and Identity classes, with one shared tuned setting chosen on 11 val clips. CI runs ruff, pytest and a Docker build on every push; the Docker image is CPU-only (about 4 fps with v6).',
+        body: 'Output is an annotated video plus a schema-validated per-frame Parquet table (frame, track ID, team, role, box, confidence). Seven trackers are scored with TrackEval’s HOTA, CLEAR and Identity classes, with one shared tuned setting chosen on 11 val clips. The detector never trained on any validation or test clip. CI runs ruff, pytest and a Docker build on every push; the Docker image is CPU-only (about 4 fps with v6).',
       },
     ],
     highlights: [
@@ -339,12 +373,38 @@ export interface SkillGroup {
 }
 
 export const skillGroups: SkillGroup[] = [
-  { label: 'Languages & Data', skills: ['Python', 'SQL', 'PostgreSQL'] },
-  { label: 'Core ML / DL', skills: ['Machine Learning', 'Deep Learning', 'Computer Vision', 'NLP', 'OCR'] },
-  { label: 'LLMs & Generative AI', skills: ['LLM', 'VLM', 'Generative AI', 'Agentic AI', 'RAG'] },
-  { label: 'Agent / LLM Frameworks', skills: ['LangChain', 'LangGraph', 'CrewAI'] },
+  { label: 'Languages & Data', skills: ['Python', 'SQL'] },
+  {
+    label: 'Core ML / DL',
+    skills: [
+      'Machine Learning', 'Deep Learning', 'Computer Vision', 'Object Detection and Tracking', 'OCR', 'NLP',
+      'Fine-Tuning (LoRA/QLoRA)', 'Model Optimization', 'Quantization', 'Evals',
+    ],
+  },
+  {
+    label: 'LLMs & Generative AI',
+    skills: [
+      'LLMs', 'VLMs', 'Generative AI', 'Agentic AI', 'Multi-Agent Systems', 'RAG', 'Prompt Engineering',
+      'Embeddings', 'Multimodal AI',
+    ],
+  },
+  {
+    label: 'Frameworks & Libraries',
+    skills: [
+      'PyTorch', 'Ultralytics (YOLO)', 'OpenCV', 'Hugging Face', 'scikit-learn', 'NumPy', 'Pandas', 'LangChain',
+      'LangGraph', 'CrewAI', 'LangSmith', 'Pydantic', 'Flask', 'FastAPI', 'Streamlit', 'Gradio', 'pytest',
+      'PaddleOCR', 'EasyOCR', 'Tesseract', 'TrackEval',
+    ],
+  },
+  { label: 'LLM APIs', skills: ['Azure OpenAI API', 'Gemini', 'Groq', 'LiteLLM'] },
   { label: 'Vector Stores', skills: ['ChromaDB', 'pgvector', 'Pinecone'] },
-  { label: 'MLOps & Deployment', skills: ['Docker', 'MLOps', 'MLflow', 'ONNX'] },
+  {
+    label: 'MLOps & Deployment',
+    skills: [
+      'Docker', 'ONNX Runtime', 'MLflow', 'Weights & Biases', 'Locust', 'GitHub Actions', 'Hugging Face Spaces',
+      'Git/GitHub',
+    ],
+  },
 ];
 
 // ---------------- Experience ----------------
@@ -479,7 +539,7 @@ export const positions: Position[] = [
 // ---------------- Education ----------------
 
 export const education = {
-  degree: 'B.Tech, Computer Engineering — Specialization in Artificial Intelligence',
+  degree: 'B.Tech, Computer Engineering (Specialization in Artificial Intelligence)',
   institution: 'Marwadi University',
   period: '2020 — 2024',
   location: 'Rajkot, India',
@@ -502,12 +562,17 @@ export interface Paper {
   venue: string;
   year: string;
   summary: string;
+  /** Authorship and venue detail line. */
+  detail?: string;
+  doi?: string;
   url?: string;
 }
 
 export interface Patent {
   title: string;
   number: string;
+  status: 'Granted' | 'Published';
+  role: string;
   description: string;
   /** YouTube video id — renders an inline "Watch demo" player on the patent card. */
   demoVideoId?: string;
@@ -518,18 +583,24 @@ export const papers: Paper[] = [
     title: 'Barcode and QR Code Object Detection: An Experimental Study on YOLOv8 Models',
     venue: 'INNOCOMP 2024 · IEEE',
     year: '2024',
+    detail:
+      'First of six authors · INNOCOMP 2024 (International Conference on Emerging Innovations and Advanced Computing), Sonipat, 25–26 May 2024',
+    doi: '10.1109/INNOCOMP63224.2024.00127',
     summary:
       'Evaluated YOLOv8 nano/small/medium for barcode & QR detection; the small model reached 97.1% accuracy.',
-    url: 'https://doi.org/10.1109/innocomp63224.2024.00127',
+    url: 'https://ieeexplore.ieee.org/document/10664098',
   },
   {
     title:
       'Enhancing DNA Sequence Classification Through Machine Learning: A Comparative Study on Human and Chimpanzee Genomic Data',
     venue: 'Global AI Summit · IEEE',
     year: '2024',
+    detail:
+      'First of six authors · 2024 International Conference on Artificial Intelligence and Emerging Technology (Global AI Summit), Greater Noida, 4–6 September 2024',
+    doi: '10.1109/GlobalAISummit62156.2024.10947774',
     summary:
       'Compared nine ML algorithms with k-mer features; Naïve Bayes reached 99% accuracy on human DNA.',
-    url: 'https://doi.org/10.1109/GlobalAISummit62156.2024.10947774',
+    url: 'https://ieeexplore.ieee.org/abstract/document/10947774',
   },
 ];
 
@@ -537,22 +608,30 @@ export const patents: Patent[] = [
   {
     title: 'Navigational Aid Device for Visually Impaired Individuals',
     number: '202421033107',
+    status: 'Granted',
+    role: 'Lead inventor',
     description: 'A device that helps visually impaired people navigate their surroundings safely.',
   },
   {
     title: 'System and Method for Translating Sign Language into Spoken Language',
     number: '202421033112',
+    status: 'Published',
+    role: 'Lead inventor',
     description: 'An application that lets deaf and mute individuals communicate in their own language.',
     demoVideoId: '9uLNXZF47R4',
   },
   {
     title: 'Real-Time Detection of Manipulated Digital Images Using AI',
     number: '202421033396',
+    status: 'Published',
+    role: 'Co-inventor',
     description: 'Detects deepfake / manipulated images in real time to help prevent fraud.',
   },
   {
     title: 'Advanced Myoelectric Prosthetic Arm with Integrated Sensory Feedback',
     number: '202421033382',
+    status: 'Published',
+    role: 'Lead inventor',
     description: 'A prosthetic arm with motor-controlled joints that restores day-to-day function.',
   },
 ];

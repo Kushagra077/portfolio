@@ -16,7 +16,7 @@ export default function Home() {
       {/* Proof points */}
       <section className="border-t border-border pb-20 pt-10">
         <Reveal>
-          <p className="label-mono">Results</p>
+          <p className="label-mono">Selected results</p>
         </Reveal>
         <Stagger className="mt-10 grid grid-cols-2 gap-x-6 gap-y-10 lg:grid-cols-4">
           {stats.map((s) => (
@@ -45,7 +45,7 @@ export default function Home() {
           </div>
         </Reveal>
 
-        <Stagger className="mt-10 grid gap-6 md:grid-cols-2">
+        <Stagger className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {featured.map((p) => (
             <StaggerItem key={p.slug}>
               <FeaturedProjectCard project={p} />

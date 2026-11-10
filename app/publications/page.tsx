@@ -6,7 +6,7 @@ import { DemoVideo } from '@/components/publications/demo-video';
 
 export const metadata = {
   title: 'Publications — Kushagra Pandya',
-  description: 'Peer-reviewed research and filed patents in AI and computer vision.',
+  description: 'Peer-reviewed research and patents in AI and computer vision.',
 };
 
 export default function PublicationsPage() {
@@ -15,7 +15,7 @@ export default function PublicationsPage() {
       <PageHeader
         eyebrow="Research"
         title="Publications & patents."
-        subtitle="Peer-reviewed research and filed patents in AI and computer vision."
+        subtitle="Peer-reviewed research and patents in AI and computer vision."
       />
 
       {/* Papers */}
@@ -33,7 +33,13 @@ export default function PublicationsPage() {
                 <h3 className="mt-3 font-display text-xl font-semibold leading-snug tracking-tight text-foreground">
                   {paper.title}
                 </h3>
+                {paper.detail && (
+                  <p className="mt-2 text-sm leading-relaxed text-foreground/80">{paper.detail}</p>
+                )}
                 <p className="mt-3 leading-relaxed text-muted-foreground">{paper.summary}</p>
+                {paper.doi && (
+                  <p className="mt-3 font-mono text-xs text-muted-foreground">DOI {paper.doi}</p>
+                )}
                 {paper.url && (
                   <a
                     href={paper.url}
@@ -60,9 +66,20 @@ export default function PublicationsPage() {
           {patents.map((patent) => (
             <StaggerItem key={patent.number}>
               <article className="h-full rounded-lg border border-border bg-card p-6">
-                <p className="font-mono text-[11px] uppercase tracking-[0.12em] text-primary">
-                  #{patent.number}
-                </p>
+                <div className="flex flex-wrap items-center gap-2">
+                  <p className="font-mono text-[11px] uppercase tracking-[0.12em] text-primary">
+                    #{patent.number}
+                  </p>
+                  <span
+                    className={
+                      patent.status === 'Granted'
+                        ? 'rounded-full bg-primary/10 px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.12em] text-primary'
+                        : 'rounded-full border border-border px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.12em] text-muted-foreground'
+                    }
+                  >
+                    {patent.status}
+                  </span>
+                </div>
                 <h3 className="mt-3 font-display text-lg font-semibold leading-snug tracking-tight text-foreground">
                   {patent.title}
                 </h3>
@@ -77,7 +94,7 @@ export default function PublicationsPage() {
                   />
                 )}
                 <p className="mt-4 font-mono text-[11px] uppercase tracking-[0.12em] text-muted-foreground/70">
-                  Intellectual Property India · 2024
+                  Intellectual Property India · 2024 · {patent.role}
                 </p>
               </article>
             </StaggerItem>
