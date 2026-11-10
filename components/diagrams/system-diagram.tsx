@@ -174,15 +174,15 @@ function SmartIngest({ reduce }: { reduce: boolean }) {
 
 function RecruitRadar({ reduce }: { reduce: boolean }) {
   const rowMid = 56;
-  const labels = ['JD Analyst', 'Resume Scorer', 'Interview Designer', 'Outreach Drafter', 'Tracker'];
-  const activeIdx = 1;
-  const scorerCx = rowX(1) + W / 2; // 271
+  const labels = ['JD Analyst', 'Embedding pre-filter', 'Resume Scorer', 'Interview + Outreach', 'Tracker'];
+  const activeIdx = 2;
+  const scorerCx = rowX(2) + W / 2;
   return (
     <motion.svg
       viewBox="0 0 940 240"
       className="h-auto w-full"
       role="img"
-      aria-label="RecruitRadar crew: JD Analyst, Resume Scorer, Interview Designer, Outreach Drafter, Tracker, with an Evidence guard branch under Resume Scorer"
+      aria-label="RecruitRadar crew: JD Analyst, Embedding pre-filter, Resume Scorer, Interview Designer and Outreach Drafter, Tracker, with an Evidence guard branch under Resume Scorer"
       initial={reduce ? 'show' : 'hidden'}
       whileInView="show"
       viewport={{ once: true, margin: '-60px' }}
@@ -206,7 +206,7 @@ function RecruitRadar({ reduce }: { reduce: boolean }) {
       {labels.map((label, i) => (
         <Node key={label} label={label} x={rowX(i)} y={rowMid - H / 2} active={i === activeIdx} />
       ))}
-      <Node label="Evidence guard" x={rowX(1)} y={150} />
+      <Node label="Evidence guard" x={rowX(2)} y={150} />
       <text
         x={scorerCx}
         y={150 + H + 18}
@@ -215,7 +215,7 @@ function RecruitRadar({ reduce }: { reduce: boolean }) {
         fontSize={12}
         fill="hsl(var(--muted-foreground))"
       >
-        rapidfuzz · every claim cites the resume
+        rapidfuzz ≥ 85 · unsupported claims are dropped
       </text>
     </motion.svg>
   );
@@ -264,7 +264,7 @@ function FootballDetect({ reduce }: { reduce: boolean }) {
         fontSize={12}
         fill="hsl(var(--muted-foreground))"
       >
-        torch vs onnx-fp32 vs onnx-int8, same evaluator
+        4 presets · torch / fp32 / INT8 · same evaluator
       </text>
     </motion.svg>
   );
@@ -272,15 +272,15 @@ function FootballDetect({ reduce }: { reduce: boolean }) {
 
 function FootballMetrics({ reduce }: { reduce: boolean }) {
   const rowMid = 56;
-  const labels = ['Metrica / SkillCorner', 'Unified schema', 'Metrics layer', 'Validation', 'Dashboard'];
+  const labels = ['Metrica / SkillCorner', 'Unified schema', 'Kinematics + metrics', 'Parquet cache', 'Dashboard'];
   const activeIdx = 2;
   const metricsCx = rowX(2) + W / 2;
   return (
     <motion.svg
-      viewBox="0 0 902 240"
+      viewBox="0 0 940 240"
       className="h-auto w-full"
       role="img"
-      aria-label="Football Tactical Metrics pipeline: Metrica / SkillCorner, Unified schema, Metrics layer, Validation, Dashboard, with a Coverage rule branch under Metrics layer"
+      aria-label="Football Tactical Metrics pipeline: Metrica / SkillCorner, Unified schema, Kinematics and metrics, Parquet cache, Dashboard, with a Coverage rule branch under Kinematics and metrics and a Validation branch off the cache"
       initial={reduce ? 'show' : 'hidden'}
       whileInView="show"
       viewport={{ once: true, margin: '-60px' }}
@@ -304,16 +304,38 @@ function FootballMetrics({ reduce }: { reduce: boolean }) {
       {labels.map((label, i) => (
         <Node key={label} label={label} x={rowX(i)} y={rowMid - H / 2} active={i === activeIdx} />
       ))}
+      {/* validation reads the cache offline; the dashboard does not depend on it */}
+      <motion.line
+        x1={rowX(3) + W / 2}
+        y1={rowMid + H / 2}
+        x2={rowX(3) + W / 2}
+        y2={150}
+        stroke="hsl(var(--primary))"
+        strokeWidth={1.25}
+        markerEnd="url(#arrow-cobalt)"
+        variants={lineVariants}
+      />
       <Node label="Coverage rule" x={rowX(2)} y={150} />
+      <Node label="Validation" x={rowX(3)} y={150} />
       <text
         x={metricsCx}
         y={150 + H + 18}
         textAnchor="middle"
         className="font-mono"
-        fontSize={10}
+        fontSize={12}
         fill="hsl(var(--muted-foreground))"
       >
-        ≥95% tracked, or the value stays empty
+        ≥95% tracked, or empty
+      </text>
+      <text
+        x={rowX(3) + W / 2}
+        y={150 + H + 18}
+        textAnchor="middle"
+        className="font-mono"
+        fontSize={12}
+        fill="hsl(var(--muted-foreground))"
+      >
+        offline check
       </text>
     </motion.svg>
   );
@@ -321,7 +343,7 @@ function FootballMetrics({ reduce }: { reduce: boolean }) {
 
 function FootballTracker({ reduce }: { reduce: boolean }) {
   const rowMid = 56;
-  const labels = ['Detect (YOLO26)', 'Track (BoT-SORT)', 'Torso colour', 'Team vote', 'Export'];
+  const labels = ['Detect (YOLO26)', 'Track: BoT-SORT + GMC', 'Torso colour', 'Team vote', 'Export'];
   const activeIdx = 1;
   const trackCx = rowX(1) + W / 2; // 271
   return (

@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ArrowLeft, ArrowUpRight } from 'lucide-react';
-import { projects, getProject } from '@/lib/data';
+import { projects, getProject, demoLabel } from '@/lib/data';
 import { SystemDiagram } from '@/components/diagrams/system-diagram';
 import { Reveal, Stagger, StaggerItem } from '@/components/motion';
 
@@ -78,7 +78,7 @@ export default function CaseStudyPage({ params }: { params: { slug: string } }) 
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 rounded-md border border-border px-5 py-2.5 text-sm font-medium text-foreground transition hover:border-foreground/30 hover:text-primary"
               >
-                Live demo
+                {demoLabel(project.demoUrl)}
                 <ArrowUpRight className="h-4 w-4" />
               </a>
             )}

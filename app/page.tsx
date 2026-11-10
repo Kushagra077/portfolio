@@ -16,7 +16,7 @@ export default function Home() {
       {/* Proof points */}
       <section className="border-t border-border pb-20 pt-10">
         <Reveal>
-          <p className="label-mono">In production</p>
+          <p className="label-mono">Results</p>
         </Reveal>
         <Stagger className="mt-10 grid grid-cols-2 gap-x-6 gap-y-10 lg:grid-cols-4">
           {stats.map((s) => (

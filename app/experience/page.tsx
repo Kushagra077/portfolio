@@ -1,10 +1,11 @@
+import { ChevronRight } from 'lucide-react';
 import { positions } from '@/lib/data';
 import { PageHeader } from '@/components/page-header';
 import { Reveal } from '@/components/motion';
 
 export const metadata = {
   title: 'Experience — Kushagra Pandya',
-  description: 'Building and shipping AI in production at TSS Consultancy.',
+  description: 'Identity-document AI at TSS Consultancy: classification, liveness, extraction and fine-tuning.',
 };
 
 export default function ExperiencePage() {
@@ -13,7 +14,7 @@ export default function ExperiencePage() {
       <PageHeader
         eyebrow="Career"
         title="Experience."
-        subtitle="Building and shipping AI in production."
+        subtitle="Identity-document AI, from research to production."
       />
 
       <div className="mt-14 border-l border-border pl-6 sm:pl-10">
@@ -45,14 +46,34 @@ export default function ExperiencePage() {
                 {p.company} · {p.location}
               </p>
 
-              <ul className="mt-4 space-y-2.5">
-                {p.bullets.map((b, j) => (
-                  <li key={j} className="flex gap-3 text-[15px] leading-relaxed text-muted-foreground">
-                    <span className="mt-2.5 h-1 w-1 shrink-0 rounded-full bg-primary/60" />
-                    <span>{b}</span>
-                  </li>
-                ))}
-              </ul>
+              <p className="mt-4 text-[15px] leading-relaxed text-foreground/90">{p.summary}</p>
+
+              <details className="group mt-4">
+                <summary className="inline-flex cursor-pointer list-none items-center gap-1.5 font-mono text-xs uppercase tracking-[0.12em] text-primary transition hover:opacity-80 [&::-webkit-details-marker]:hidden">
+                  <ChevronRight className="h-3.5 w-3.5 transition-transform group-open:rotate-90" />
+                  <span className="group-open:hidden">Show details</span>
+                  <span className="hidden group-open:inline">Hide details</span>
+                </summary>
+                <div className="mt-5 space-y-6">
+                  {p.sections.map((sec, k) => (
+                    <div key={k}>
+                      {sec.title && (
+                        <h4 className="font-display text-base font-semibold tracking-tight text-foreground">
+                          {sec.title}
+                        </h4>
+                      )}
+                      <ul className={sec.title ? 'mt-2.5 space-y-2.5' : 'space-y-2.5'}>
+                        {sec.bullets.map((b, j) => (
+                          <li key={j} className="flex gap-3 text-[15px] leading-relaxed text-muted-foreground">
+                            <span className="mt-2.5 h-1 w-1 shrink-0 rounded-full bg-primary/60" />
+                            <span>{b}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ))}
+                </div>
+              </details>
 
               <div className="mt-4 flex flex-wrap gap-2">
                 {p.tech.map((t) => (

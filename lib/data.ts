@@ -58,11 +58,12 @@ export interface Stat {
   context: string;
 }
 
-// Proof points shown on the home page. Sourced from the experience and papers below.
+// Proof points shown on the home page. Sourced from the experience and papers below;
+// keep them in sync with the Experience entries.
 export const stats: Stat[] = [
-  { value: '60–70K', label: 'daily API hits', context: 'Document classification in production at ~0.5s latency' },
-  { value: '95%', label: 'deepfake accuracy', context: 'Detection model, optimized with ONNX and quantization' },
-  { value: '8', label: 'Indian languages', context: 'Multilingual OCR pipeline in production' },
+  { value: '~50K', label: 'daily API requests', context: 'Identity-document classification API: ~0.5s model inference, ~1.5s end to end' },
+  { value: '98.92%', label: 'document-classification accuracy', context: 'Measured on a ~3K-image in-house benchmark covering every input type' },
+  { value: '89%', label: 'passive liveness accuracy', context: 'Average over open datasets held out of training; 93% on the training-source split' },
   { value: '2', label: 'IEEE papers', context: 'Published at INNOCOMP and Global AI Summit, 2024' },
 ];
 
@@ -108,39 +109,40 @@ export const projects: Project[] = [
     category: 'AGENTIC PIPELINE',
     tagline: 'Agentic document-intelligence pipeline',
     description:
-      'An agentic pipeline that turns messy, unstructured documents into validated, routed structured data.',
+      'Classifies invoices, contracts, resumes and IDs, extracts typed fields with Gemini, then approves, flags or rejects them with deterministic rules.',
     summary:
-      'An agentic document-intelligence pipeline that ingests messy documents and returns validated, routed structured data — with guardrails, grounding and an intelligent retry loop.',
+      'A five-node LangGraph pipeline over FastAPI. Gemini does the vision classification and extraction; validation and routing are deterministic Python driven by YAML rules, with prompt-injection and grounding guardrails, a confidence-triggered re-extraction loop, and per-node LangSmith traces.',
     diagram: 'smartingest',
-    tech: ['Python 3.12', 'LangGraph', 'FastAPI', 'Gemini', 'Pydantic', 'Docker', 'LangSmith'],
-    metrics: ['72 tests', 'eval-gated CI', 'Dockerized'],
+    tech: ['Python 3.12', 'LangGraph', 'Gemini', 'FastAPI', 'Pydantic v2', 'SQLite', 'LangSmith', 'Docker', 'uv'],
+    metrics: ['72 tests', 'Offline eval gate in CI', '4 document types'],
     githubUrl: 'https://github.com/Kushagra077/SmartIngest',
+    demoUrl: 'https://youtu.be/DgXVG6Zd9wA',
     steps: [
       {
         title: 'Guardrails',
-        body: 'Every document is screened first — prompt-injection scanning and PII redaction before anything reaches the model.',
+        body: 'Uploads are checked for size (25 MB) and type before anything is stored. The first graph node then scans text documents with regex heuristics for prompt injection and for PII (email, phone, SSN, card). PII is reported by category only and never changes the route. An injection match is an error-level finding that forces a reject at the end of the run. Images and PDFs skip this text scan.',
       },
       {
         title: 'Classification',
-        body: 'The document is classified and routed to the correct extraction schema, so each type is handled by the right rules.',
+        body: 'Gemini (default gemini-2.0-flash, JSON mode, temperature 0) reads the PDF, image or text and returns a document type and confidence: invoice, contract, resume, id_document, or unknown. The type selects which field schema is sent to the extractor. Unknown types are rejected.',
       },
       {
         title: 'Extraction',
-        body: 'Gemini produces structured output validated against Pydantic models — typed, predictable data instead of free text.',
+        body: 'Gemini returns JSON for the type-specific schema (for example invoice line items with GST and HSN codes, or contract parties and clauses). It is parsed into Pydantic v2 models that drop stray nulls and salvage valid fields when one value is malformed. If the primary model returns 429 or 503, the client fails over to gemini-1.5-flash, then gemini-1.5-flash-8b.',
       },
       {
         title: 'Validation & grounding',
-        body: 'Outputs are grounded against the source to catch hallucinations; low-confidence results trigger an automatic retry loop.',
+        body: 'No LLM is involved here. Python checks required fields, ISO dates, invoice totals against components (0.05 tolerance), tax-ID and ID-number formats, and the vendor whitelist. A grounding check flags vendor, invoice number, name, ID number, total or contract value that does not appear in the source text. If extraction confidence is below 0.75, a conditional edge re-runs the extractor, for at most 2 extractor passes.',
       },
       {
         title: 'Routing',
-        body: 'Validated data is routed by deterministic YAML rules to its destination, with full LangSmith tracing end-to-end.',
+        body: 'A deterministic router (not an LLM call) picks one outcome, in order: reject for an injection finding, a validation error or an unknown type; flag for review for an invoice over 10,000, a grounding or validation warning, or low classification confidence; otherwise auto-approve. Thresholds, vendor whitelist and required fields come from config/rules.yaml. Jobs run asynchronously behind POST /upload, /status and /results, and each node is traced in LangSmith on the API path.',
       },
     ],
     highlights: [
-      '72 tests with an eval harness wired as a CI gate',
-      'Intelligent retry loop triggered on low-confidence extractions',
-      'Deterministic YAML routing + full LangSmith tracing',
+      '72 pytest tests, plus an eval gate in CI that runs the real graph over a labelled golden set in mock-LLM mode with no API key (thresholds: classification and routing ≥ 0.8, field F1 ≥ 0.7)',
+      'Deterministic validation and routing, kept out of the LLM so decisions are reproducible, unit-testable and tunable from YAML without a redeploy',
+      'Security-aware by design: injection is rejected, ungrounded values are flagged for review, uploads are size and type checked, and the API enforces 10 requests/min per IP and a 200/day global cap to protect the Gemini quota',
     ],
   },
   {
@@ -150,39 +152,40 @@ export const projects: Project[] = [
     category: 'MULTI-AGENT SYSTEM',
     tagline: 'Multi-agent recruitment screener',
     description:
-      'A CrewAI multi-agent screener that scores resumes against a JD with deterministic, evidence-backed results.',
+      'A CrewAI multi-agent screener that ranks resumes against a JD with a score computed in Python and skill claims checked against the resume text.',
     summary:
-      'A CrewAI multi-agent recruitment screener that scores resumes against a job description with deterministic, evidence-backed scoring — saving recruiters hours per role.',
+      'A five-agent CrewAI recruitment screener: it reads a JD and a folder of PDF, DOCX or scanned resumes, ranks candidates 0–100 with a per-criterion breakdown, drafts interview kits and outreach emails, and tracks each candidate in a persistent SQLite pipeline. The total score is arithmetic in Python, and any skill claim the resume text does not support is dropped before it counts.',
     diagram: 'recruitradar',
-    tech: ['Python', 'CrewAI', 'Gemini', 'LiteLLM', 'rapidfuzz', 'SQLModel', 'SQLite'],
-    metrics: ['~6 hrs saved / role', '0–100 deterministic score', 'evidence-backed'],
+    tech: ['Python', 'CrewAI', 'Gemini', 'Groq', 'LiteLLM', 'Pydantic', 'rapidfuzz', 'SQLModel', 'SQLite', 'Streamlit', 'Tesseract'],
+    metrics: ['5 CrewAI agents', 'score computed in Python', '35 network-free tests'],
     githubUrl: 'https://github.com/Kushagra077/RecruitRadar',
+    demoUrl: 'https://youtu.be/4_sv16UfuZM',
     steps: [
       {
         title: 'JD Analyst',
-        body: 'Parses the job description into weighted, structured criteria that drive every downstream decision.',
+        body: 'A Groq-hosted Llama 3.3 70B agent turns the job description into a typed rubric (Pydantic): title, must-have skills, nice-to-have skills, minimum years and culture signals. Criterion weights are not LLM output; they come from config defaults (0.50 / 0.25 / 0.15 / 0.10) or the app sliders.',
       },
       {
         title: 'Embedding pre-filter',
-        body: 'A Gemini embedding pass shortlists resumes so expensive scoring only runs on relevant candidates.',
+        body: 'Resumes are parsed first (PDF, DOCX, and Tesseract OCR for scanned PDFs). When a batch exceeds the shortlist size (default 25), Gemini embeddings rank resumes by cosine similarity to the JD and only the top 25 go to the LLM crew. Smaller batches skip this step.',
       },
       {
-        title: 'Resume Scorer',
-        body: 'Computes a deterministic 0–100 score with weighted sums in code (never emitted by the LLM); every matched skill must cite a verbatim resume quote, verified with rapidfuzz.',
+        title: 'Resume Scorer + evidence guard',
+        body: 'A Gemini agent at temperature 0 judges experience and culture on a 0–1 scale and cites a quote for each skill it credits. A rapidfuzz guard (≥ 85) checks each claim against the parsed resume text and demotes unsupported ones to not-found with a flag. Skill fractions are recomputed from the surviving claims, and the 0–100 total is a weighted sum in Python.',
       },
       {
-        title: 'Interview Designer',
-        body: 'Drafts tailored interview questions grounded in the candidate’s actual experience and the role’s criteria.',
+        title: 'Interview Designer + Outreach Drafter',
+        body: 'For the top 5 candidates, a Gemini agent writes 3 technical and 2 behavioral questions, each with what a strong answer looks like. A Groq agent drafts outreach for every candidate: an invite at a score of 70 or above, otherwise a respectful rejection. Both run concurrently per candidate (5 workers).',
       },
       {
-        title: 'Outreach & Tracker',
-        body: 'Writes personalized outreach messages and tracks every candidate through an SQLite kanban pipeline.',
+        title: 'Tracker',
+        body: 'A Groq agent writes a next action and follow-up note per candidate. Stage changes are a rule-based state machine, not LLM output: score ≥ 70 means shortlisted, below 70 means rejected, and manual stages such as interviewing, offer and hired are not overwritten on re-runs. Records persist in SQLite via SQLModel and show on a Streamlit kanban, alongside ranked.csv, drafts and a run manifest.',
       },
     ],
     highlights: [
-      '~6 hours saved per role screened',
-      'Deterministic, auditable scoring — no LLM-emitted numbers',
-      'Evidence guard: every claim cites a verbatim resume quote',
+      'Total score is arithmetic in Python; the LLM only gives 0–1 judgments for experience and culture',
+      'Evidence guard drops unsupported skill claims and flags them, so a fabricated skill lowers the score',
+      '35 network-free tests (scoring, guard, OCR parsing, tracker, mocked end-to-end run) run in GitHub Actions CI',
     ],
   },
   {
@@ -192,40 +195,44 @@ export const projects: Project[] = [
     category: 'CV SERVING PIPELINE',
     tagline: 'YOLO26 football detector, checkpoint to endpoint',
     description:
-      'A football object detector (ball, goalkeeper, player, referee) trained on broadcast footage, exported to ONNX, quantized to INT8, and served behind a batching FastAPI service — every optimization measured through one evaluator, not assumed.',
+      'A football object detector (ball, goalkeeper, player, referee) trained on SoccerNet broadcast footage, exported to ONNX and served as four speed/accuracy presets behind a batching FastAPI service. INT8 quantization and batching were each measured, and neither is a free win.',
     summary:
-      'A YOLO26 football detector taken from checkpoint to endpoint: trained on SoccerNet broadcast footage, exported to ONNX and quantized to INT8, then served behind a batching FastAPI service — with the same evaluator run against every backend so accuracy and latency claims are measured, not asserted.',
+      'A YOLO26 football detector taken from checkpoint to endpoint: trained on SoccerNet broadcast footage, exported to ONNX, and served as four presets (test mAP50-95 0.400 to 0.477) behind a batching FastAPI service. One evaluator scores every backend, so the ONNX, INT8 and batching results are measured on the same code path, including the ones that did not pay off.',
     diagram: 'footballdetect',
-    tech: ['Python', 'Ultralytics YOLO26', 'PyTorch', 'ONNX Runtime', 'FastAPI', 'Docker', 'Locust'],
-    metrics: ['ONNX-fp32: +1.5x throughput, free', 'INT8: no CPU speedup, -0.03–0.06 mAP', 'load-tested @ concurrency 1–16'],
+    tech: ['Python', 'Ultralytics YOLO26', 'PyTorch', 'ONNX Runtime', 'FastAPI', 'Gradio', 'Docker', 'Locust', 'Prometheus', 'GitHub Actions'],
+    metrics: [
+      '4 presets: 0.400–0.477 test mAP50-95',
+      'ONNX fp32: 1.5x torch, no accuracy loss',
+      'INT8: slower on ARM and x86, -0.03 to -0.06 mAP',
+    ],
     githubUrl: 'https://github.com/Kushagra077/football-detect-serve',
     demoUrl: 'https://huggingface.co/spaces/Kushagra77/football-detect-serve',
     steps: [
       {
-        title: 'Data',
-        body: 'MOT-format tracking labels from SoccerNet broadcast footage are converted to YOLO format, then verified for class balance and bad labels before training starts.',
-      },
-      {
-        title: 'Train',
-        body: 'YOLO26 nano/small trained on broadcast football video to detect ball, goalkeeper, player and referee, with mixup added specifically to help the rare, tiny ball class.',
+        title: 'Data & train',
+        body: 'SoccerNet MOT tracking labels are converted to YOLO format: 34,500 train, 8,250 val and 36,750 test images, with classes ball, goalkeeper, player, referee and a minor "other" that is excluded from the headline mean. Val is every 5th training sequence, so it shares matches with train and reads high; test is 3 unseen matches. Runs v1 to v13 covered YOLO26 nano at 640, 960 and 1280 px and small at 1280. Input size and model size moved accuracy; a ball-weighted loss, a P2 head and tiled inference did not.',
       },
       {
         title: 'Evaluate (gate)',
-        body: 'A single evaluator computes COCO-style mAP for every backend through the same code path — cross-checked against ultralytics’ own YOLO.val() so accuracy claims are never backend-specific.',
+        body: 'scripts/eval_map.py computes COCO-style mAP50-95 for torch and ONNX through the same backend interface. The fp32 ONNX files match torch to three decimals per class. Cross-checked against ultralytics YOLO.val() on v3, the evaluator reads 0.015 to 0.019 higher, so model-to-model comparisons hold better than absolute values. On test, ball AP rises from 0.111 (fast) to 0.199 (max) and stays the weakest class.',
       },
       {
-        title: 'Export & quantize',
-        body: 'The checkpoint is exported to ONNX fp32 and INT8, calibrated on a stratified, cross-sequence sample of real training images rather than a naive slice that would collapse onto one stadium.',
+        title: 'Export ONNX',
+        body: 'Checkpoints export to ONNX (opset 12, dynamic batch, simplified) with a .meta.json sidecar that records each model’s input size. Both backends decode through ultralytics predict(), because v3 exports an NMS-free [batch, 300, 6] output and the others a dense [batch, 9, anchors] one. A hand-written decoder produced garbage on the layout it did not expect and was removed. fp32 ONNX runs 1.5x torch on an M2 CPU (16.3 vs 24.9 ms p50) at no accuracy cost.',
+      },
+      {
+        title: 'Quantize INT8 (measured)',
+        body: 'Static INT8 shrinks v3 from 10.98 MB to 2.94 MB but costs 0.027 to 0.064 mAP50-95 on val (v6: -0.046). It was also slower than fp32 on the M2 (19.0 vs 16.3 ms) and on an x86 CI runner (57.7 vs 29.8 ms), which ruled out the first guess of ARM kernel tuning. v6’s calibration used 345 images stratified across 46 sequences; v1 to v3 predate that fix. INT8 is not served.',
       },
       {
         title: 'Serve (batched)',
-        body: 'A FastAPI service holds torch, onnx-fp32 and onnx-int8 backends at once, dynamically batching requests within a 15ms window; load-tested with Locust across concurrency and batching on/off.',
+        body: 'FastAPI loads all four ONNX presets and picks one per request with ?backend=. It exposes /predict, /healthz and Prometheus /metrics, applies an SSRF guard to image_url, and returns 503 when the 256-slot queue overflows. A per-backend worker batches up to 8 requests within a 15 ms window. A Locust test against v3 in local Docker shows batching losing at concurrency 1 (14.6 vs 21.5 RPS) and winning at 16 (31.0 vs 25.8 RPS). A Gradio app on a Hugging Face ZeroGPU Space is the public demo, and its speeds do not match the CPU tables.',
       },
     ],
     highlights: [
-      'ONNX-fp32 gave 1.5x throughput for free; INT8 cost accuracy without a CPU speedup on ARM or x86 — measured, not assumed',
-      'Load testing exposed a real thread-safety bug (unsynchronized concurrent access to a non-thread-safe model) and drove a per-backend predict lock',
-      'One evaluator runs every backend through the same code path, cross-checked against ultralytics’ own evaluator to ~0.02 mAP agreement',
+      'Input size and model size were the levers: test mAP50-95 went from 0.400 (v3, 640 px) to 0.477 (v13 small, 1280 px) while latency went from 16 ms to 177 ms. Ball AP is still the weakest class at 0.199',
+      'INT8 negative result, checked on two CPUs: slower than fp32 on Apple M2 and on x86, and -0.03 to -0.06 mAP. The model is not served in INT8 and the README says why',
+      'Load testing caught an unsynchronized call into a non-thread-safe model on the no-batching path and led to a per-backend predict lock. It also showed batching only helps at high concurrency',
     ],
   },
   {
@@ -235,39 +242,39 @@ export const projects: Project[] = [
     category: 'SPORTS ANALYTICS',
     tagline: 'Provider-agnostic tactical & physical metrics from tracking data',
     description:
-      'Turns raw player-tracking data from two different providers into validated tactical and physical metrics, checked against synthetic ground truth.',
+      'Turns player-tracking data from two providers into tactical and physical metrics through one schema, then checks them against synthetic ground truth and published physiological ranges.',
     summary:
-      'Player-tracking data in, validated tactical and physical metrics out — a source-agnostic pipeline that unifies two tracking providers behind one schema, then computes and validates defensive shape, space control and player physical output.',
+      'Player-tracking data in, validated tactical and physical metrics out. Metrica (full-pitch) and SkillCorner (broadcast) feed one schema and one metrics layer, validated on 7 matches. A synthetic suite with known answers passes 22/22; real-data checks against published ranges pass 146 of 168, with the 22 failures reported rather than tuned away. A sensitivity sweep shows the sprint-speed threshold moves sprint counts 138%, while smoothing moves them 9%.',
     diagram: 'footballmetrics',
-    tech: ['Python 3.13', 'kloppy', 'pandas', 'SciPy', 'Shapely', 'mplsoccer', 'Streamlit', 'pytest'],
-    metrics: ['168/190 checks pass', '22/22 synthetic checks', '95% coverage rule'],
+    tech: ['Python 3.13', 'kloppy', 'pandas', 'SciPy', 'Shapely', 'mplsoccer', 'Streamlit', 'pytest', 'ruff', 'uv'],
+    metrics: ['22/22 synthetic checks', '146/168 real-data checks', '95% tracking-coverage rule', '7 matches, 2 providers'],
     githubUrl: 'https://github.com/Kushagra077/football-tactical-metrics',
     steps: [
       {
         title: 'Ingest',
-        body: 'Metrica and SkillCorner tracking data — x/y positions for every player and the ball, 10–25 times a second — are parsed through kloppy into one unified schema.',
+        body: 'Metrica (3 matches, 25 Hz, full pitch) and SkillCorner (4 matches, TV broadcast) tracking data are parsed through kloppy into one canonical DataFrame: frame, period, timestamp, track_id, team, x/y in metres, goalkeeper and ball flags, ball state. validate() enforces the schema and raises on any violation.',
       },
       {
         title: 'Unify',
-        body: 'The metrics layer never knows which provider a frame came from; even whether a player’s distance is reported is decided by tracking coverage, not by data source.',
+        body: 'The frame has no provider column and no metric takes a provider argument. Nothing under src/ftm/metrics imports kloppy, and a test enforces that. Which physical numbers get reported depends only on how much of the match a player was tracked; a made-up provider run through the pipeline in a test gets the same rule.',
       },
       {
         title: 'Compute',
-        body: 'Tactical metrics (defensive line height, width, compactness, Voronoi space control, pressing) and physical metrics (distance, high-speed running, sprints) are derived from configs/metrics.yaml thresholds — never hardcoded.',
+        body: 'Positions are smoothed (Savitzky-Golay, 21 frames = 0.84 s at 25 Hz) and differentiated at the native rate; frame-to-frame jumps above 12 m/s are split out as glitches, and speeds still above 12 m/s are clipped and counted. Metrics: defensive line height, width, length, convex-hull compactness, centroid, Voronoi space control, pressing (opponents within 5 m of the ball carrier), distance, high-speed running (≥ 5.5 m/s) and sprints (≥ 7.0 m/s for ≥ 1 s). Every threshold lives in configs/metrics.yaml.',
       },
       {
         title: 'Validate',
-        body: 'Every metric is checked against synthetic ground truth with known answers (e.g. a straight line at 5 m/s for 10 s must return exactly 50.0 m) plus real-data checks reported rather than tuned away.',
+        body: 'scripts/validate.py writes reports/validation.json: 22 synthetic cases with known answers (a 5 m/s line for 10 s returns 50.0 m; a 9.15 m-radius circle returns 57.31 m against 57.49 m expected, within 1%), plus 168 real-data checks against ranges from Collins et al. 2025, Gualtieri et al. 2023 and Silva et al. 2024. 146 of the 168 pass. The 22 failures are listed per player (HSR share 12, top speed 5, distance 2, sprints 2, goalkeeper speed 1).',
       },
       {
         title: 'Serve',
-        body: 'A Streamlit dashboard renders the Voronoi pitch-control diagram and centroid paths from precomputed files — no live model behind it, by design.',
+        body: 'A Streamlit dashboard reads precomputed parquet files (written at 5 Hz) and computes nothing: pitch snapshot with Voronoi cells and centroid paths, shape time series, and a per-player table showing coverage % next to every physical number. There is no hosted demo by design, because the cache holds Metrica positions the repo does not redistribute. CI runs ruff and the offline pytest suite on every push.',
       },
     ],
     highlights: [
-      '168 of 190 validation checks pass; 22/22 synthetic ground-truth checks pass exactly',
-      'Coverage rule: physical totals are only reported for players tracked ≥95% of the match — others get a below_coverage flag, not a misleading number',
-      'Glitch-aware speed pipeline: Savitzky-Golay smoothing with jump detection removes single-frame tracking spikes before differentiating speed',
+      'Coverage rule: distance, HSR and sprints are reported only for players tracked in at least 95% of the match’s frames, since a lower total is an undercount that looks like a real number. No SkillCorner player qualifies (best tracked: 78.7–82.5% of frames), so they get shape, space and pressing but no physical totals.',
+      'Sensitivity sweep on Metrica match 1: smoothing windows of 11–31 frames move sprint count 9% and distance 1%, but the sprint speed threshold (6.5–8.0 m/s) moves sprint count 138% (37 to 312 sprints across the grid). The definition is reported with the number.',
+      'Failures kept visible: 22 of 168 real-data checks fail and are reported per player with causes (low-intensity centre-backs, a faster Metrica match, tracking artefacts at the 12 m/s clip ceiling), instead of widening bands to get a green run.',
     ],
   },
   {
@@ -277,43 +284,48 @@ export const projects: Project[] = [
     category: 'VIDEO TRACKING',
     tagline: 'Player tracking and team assignment from broadcast video',
     description:
-      'Follows every player in a football broadcast with a fixed ID and splits them into two teams by shirt colour — and measures how much tracking quality the detector costs.',
+      'Follows every player in a football broadcast with a fixed ID, splits them into two teams by shirt colour, and measures how much tracking quality the detector costs.',
     summary:
-      'A computer-vision pipeline that follows each player in broadcast football video with a fixed tracker ID and assigns teams by shirt colour, abstaining when unsure. Every tracker is benchmarked twice — on perfect detections and on my own detector — so the cost of imperfect detection is measured, not guessed.',
+      'A computer-vision pipeline that follows each player in broadcast football video with a fixed tracker ID and assigns teams by shirt colour, abstaining when unsure. Seven trackers are scored on SoccerNet-Tracking twice, on perfect boxes and on my own detector, so the cost of imperfect detection is measured rather than guessed. Tuned on validation clips only; the 49-clip test split was run once.',
     diagram: 'footballtracker',
-    tech: ['Python 3.13', 'Ultralytics YOLO26', 'BoT-SORT', 'OpenCV', 'KMeans', 'TrackEval', 'Docker', 'ZeroGPU'],
-    metrics: ['HOTA 84.2 oracle → 59.0 real', '98.9% team accuracy', '~35–45 fps on M2'],
+    tech: ['Python 3.13', 'Ultralytics YOLO26', 'BoT-SORT', 'OpenCV', 'KMeans', 'TrackEval', 'Docker', 'GitHub Actions', 'ZeroGPU'],
+    metrics: ['HOTA 84.2 oracle → 63.6 real', '99.0% team accuracy', '7 trackers, 49 test clips'],
     githubUrl: 'https://github.com/Kushagra077/football-team-tracker',
     demoUrl: 'https://huggingface.co/spaces/Kushagra77/football-detect-serve',
     steps: [
       {
         title: 'Detect',
-        body: 'The custom YOLO26 nano detector from football-detect-serve finds players, goalkeepers, referees and the ball in every frame, run at a low confidence threshold so the tracker can recover weak detections.',
+        body: 'My custom YOLO26 nano detector (v6, 1280 px) from football-detect-serve finds players, goalkeepers and referees; ball detections are dropped. It runs at confidence 0.1 so the tracker’s second pass can use weak boxes. Four detector versions were compared: v6 gained 4.6 HOTA over the first (59.0 to 63.6) and had 32% fewer ID switches.',
       },
       {
         title: 'Track',
-        body: 'BoT-SORT with camera-motion compensation assigns each player a fixed ID while they stay in shot. Broadcast cameras pan constantly, so compensating for it matters: on perfect boxes it cut ID switches from 3,524 to 1,251.',
+        body: 'Ultralytics’ BoT-SORT with camera-motion compensation (GMC) gives each player a fixed ID while they stay in shot. Broadcast cameras pan constantly: on perfect boxes GMC cut ID switches from 3,524 to 1,251, and on my detector’s boxes it added 3.0 HOTA (60.6 to 63.6). IDs still restart at camera cuts; there is no re-identification across shots.',
       },
       {
         title: 'Colour',
-        body: 'Each player’s torso is cropped, grass pixels are masked out by HSV hue, and the rest becomes a Lab colour histogram — a feature that holds up better than a simple mean colour.',
+        body: 'Each box is cropped to the torso band (15–50% of height), grass pixels are masked by HSV hue, and the rest becomes a 4×6×6 Lab colour histogram. A histogram keeps both stripes of a striped shirt where a mean blends them. Chosen over five alternatives on 46 train clips and confirmed on val (97.5% vs 96.8% for mean Lab); it is worse on dark-blue shirts in shade and blur.',
       },
       {
         title: 'Assign teams',
-        body: 'KMeans (k=2) fit on early pitch frames splits players into two teams, and each track takes a majority vote across 12 frames either side. Referees, close-ups and ambiguous goalkeepers get no team rather than a wrong one.',
+        body: 'KMeans (k=2, no labels) is fit on the first 50 frames showing at least 3 players. Each track then takes the majority team over a 25-frame window centred on each frame (12 back, 12 forward). On uploaded video, close-ups and colours that fit neither team get no team, and a goalkeeper joins the nearer team by image position or stays unassigned (on test: right 21, wrong 5, unknown 37 of 63).',
       },
       {
         title: 'Export & benchmark',
-        body: 'Outputs are an annotated video and a per-frame Parquet table. Seven trackers are scored on SoccerNet-Tracking with TrackEval (HOTA, CLEAR, Identity), tuned on validation only, with the test split run once.',
+        body: 'Output is an annotated video plus a schema-validated per-frame Parquet table (frame, track ID, team, role, box, confidence). Seven trackers are scored with TrackEval’s HOTA, CLEAR and Identity classes, with one shared tuned setting chosen on 11 val clips. CI runs ruff, pytest and a Docker build on every push; the Docker image is CPU-only (about 4 fps with v6).',
       },
     ],
     highlights: [
-      'Detector cost is quantified: 19–25 HOTA points lost across trackers when moving from perfect boxes to the real detector — detection is the bottleneck, not tracking',
-      'Appearance ReID was tested and rejected: it lowered HOTA by 1.3 on perfect boxes and 0.8 on real ones, so it never made it into the default pipeline',
-      'Abstention by design: the temporal vote cut team-label flips by 79%, and the system withholds a team when unsure because a wrong colour on screen looks worse than none',
+      'The detector is the bottleneck: moving from perfect boxes to my detector costs 15–21 HOTA points across the seven trackers (19–25 with the first detector), e.g. BoT-SORT + GMC 84.2 to 63.6',
+      'Appearance ReID was tested and rejected: it lowered HOTA by 1.3 on perfect boxes and 0.8 on real ones, and added ID switches (tested with the first detector, not re-run with v6)',
+      'A centred temporal vote lifted team accuracy to 99.0% (98.5% without it) and cut label flips by 81%, 3,065 to 570; the earlier backward-only vote was no better than no vote, so it was replaced',
     ],
   },
 ];
+
+/** "Watch demo" for video links, "Live demo" for hosted apps. */
+export function demoLabel(url: string) {
+  return /youtu\.?be/.test(url) ? 'Watch demo' : 'Live demo';
+}
 
 export function getProject(slug: string) {
   return projects.find((p) => p.slug === slug);
@@ -337,49 +349,128 @@ export const skillGroups: SkillGroup[] = [
 
 // ---------------- Experience ----------------
 
+export interface PositionSection {
+  title?: string;
+  bullets: string[];
+}
+
 export interface Position {
   role: string;
   company: string;
   period: string;
   location: string;
   current?: boolean;
-  bullets: string[];
+  /** Short version shown on the timeline card. */
+  summary: string;
+  /** Longer version, shown under "Details". */
+  sections: PositionSection[];
   tech: string[];
 }
 
 export const positions: Position[] = [
   {
-    role: 'Software Engineer — AI',
+    role: 'Software Engineer - AI',
     company: 'TSS Consultancy Pvt Ltd',
     period: '03/2026 — Present',
     location: 'Rajkot, India',
     current: true,
-    bullets: [
-      'Designed and deployed an Active Liveness Detection system that distinguishes live users from spoofing attempts (photos, videos, 3D masks), integrated into real-time identity-verification pipelines.',
-      'Engineered multi-stage challenge-response liveness checks using facial-landmark analysis and texture anti-spoofing models, achieving high precision with low false-acceptance rates.',
+    summary:
+      'I improve and extend TSS’s production identity-document AI: I built a passive liveness-detection model (89% average accuracy on held-out benchmarks), raised photo-match and document-extraction accuracy through pre- and post-processing fixes without retraining, and fine-tune models as new data arrives.',
+    sections: [
+      {
+        title: 'Passive liveness detection',
+        bullets: [
+          'Built a liveness model that needs no user action. It is trained to reject poster, 2D-mask, cropped-face and replay attacks, and their variants.',
+          'Training data came from many open sources, covering real faces and spoof attacks captured on phones, webcams and tablets, plus some data I built in-house. Mixing sources on purpose kept the model from overfitting to one camera or dataset.',
+          'Held out several open datasets that never entered training (their samples were too few to train on). The model reached 89% average accuracy across them; on a validation split from the training sources it scored 93%. I treat 89% as the honest number because those datasets were unseen.',
+          'About 0.5s inference, serving about 1,000 requests per day while a client used it. I chose an offline, in-house model over a third-party liveness API for data privacy.',
+          'After launch I tracked the success/fail ratio, reviewed failed cases to check for data drift, and kept adding real-world data from open sources. It took about six months from first commit to users.',
+        ],
+      },
+      {
+        title: 'Photo match and document extraction',
+        bullets: [
+          'Raised photo-match accuracy by 2 points at the 65 threshold and 4 points at the 70 threshold on our in-house benchmark. The gain came from code: better pre- and post-processing, with no retraining.',
+          'Raised overall extraction accuracy across Aadhaar, PAN, Voter and Passport by about 2% (relative). Each document has its own extraction rules, so some fields improved and others stayed the same.',
+          'Found and fixed a date-of-birth bug on UK and US passports: the two countries use a different date format, and extraction dropped the day and month and returned only the year. Verified the fix on thousands of synthetic passport samples (no real data, so I do not quote a real-world accuracy).',
+        ],
+      },
+      {
+        title: 'Aadhaar-number masking',
+        bullets: [
+          'Fine-tuned the model that auto-redacts Aadhaar numbers on document images, using newly collected data. More benchmark samples are now handled correctly.',
+        ],
+      },
     ],
-    tech: ['Computer Vision', 'Anti-Spoofing', 'PyTorch', 'Python'],
+    tech: ['Computer Vision', 'Anti-Spoofing', 'Fine-Tuning', 'Pre/Post-Processing', 'PyTorch', 'ONNX', 'Flask', 'Python'],
   },
   {
-    role: 'Associate Software Engineer — AI',
+    role: 'Associate Software Engineer - AI',
     company: 'TSS Consultancy Pvt Ltd',
     period: '01/2024 — 02/2026',
     location: 'Rajkot, India',
-    bullets: [
-      'Deployed a high-throughput Document Image Classification system handling 60K–70K daily API hits at ~0.5s latency in production.',
-      'Built and deployed a multilingual OCR pipeline across 8 Indian languages plus an identity-document extraction system using OCR and deep learning.',
-      'Developed Deepfake Detection at 95% accuracy and optimized model inference using ONNX, quantization, Docker and Azure for scalable deployment.',
+    summary:
+      'Joined a three-person KYC-AI team and built the document classification, detection and field-extraction models behind a production API (98.92% accuracy on an in-house benchmark, about 50K requests per day), plus a deepfake detector and several fine-tuning PoCs.',
+    sections: [
+      {
+        title: 'Identity-document classification and detection',
+        bullets: [
+          'Started on a very new three-person team. The first task was classifying a document image as Aadhaar, PAN, Voter, Passport, driving licence and so on.',
+          'First fine-tuned several Vision Transformer models from Hugging Face. They were accurate but too heavy to run on CPU at production latency.',
+          'Moved to a small YOLO model chosen to run on CPU, offline, with low latency: fine-tuned it, exported it to ONNX and wrote a custom inference pipeline.',
+          'Also trained a detection model that classifies and crops the ID in one step, and a field-detection model that finds boxes for name, date of birth and gender. A LayoutLM attempt to do all of it at once did not work, so I dropped it.',
+          'Result: 98.92% accuracy on a ~3K-image in-house benchmark that covers every input type we label. The API serves about 50K requests per day on average, with about 0.5s model inference and about 1.5s end-to-end latency.',
+        ],
+      },
+      {
+        title: 'Aadhaar field extraction',
+        bullets: [
+          'Compared EasyOCR, PaddleOCR and Tesseract, and chose PaddleOCR. Wrote the regex parsing for name, date of birth, gender and address, then replaced position guessing with the field-detection model above.',
+          'About 94% field accuracy at build time. The pipeline has improved since, so this is a historical number.',
+        ],
+      },
+      {
+        title: 'Photo match',
+        bullets: [
+          'Built the first version of the face-match service (is this the same person in two photos?) using open-source models, including DeepFace and Siamese-network approaches, on a CNN-based model.',
+        ],
+      },
+      {
+        title: 'Deepfake detection',
+        bullets: [
+          'Built a deepfake detector that reached 92% accuracy on test data curated from open-source datasets, with about 1s inference. Exported to ONNX and served as a Dockerized API. It is deployed, but no client uses it.',
+        ],
+      },
+      {
+        title: 'LLM and VLM fine-tuning PoCs',
+        bullets: [
+          'Driving-licence extraction with VLMs: licences come in many layouts. I fine-tuned Llama 3.2 11B Vision and LLaVA-Llama3 8B using QLoRA and Unsloth. They reached about 90% on our test set, but I did not ship them because of latency. A small driving-licence classifier I built for the same problem is in production.',
+          'Address parsing with small LLMs: fine-tuned Llama-3.2-1B and Phi-3 with LoRA to turn free-text addresses into structured fields. The models were too large for the use case, so I stopped the PoC.',
+        ],
+      },
+      {
+        title: 'Multilingual OCR PoC',
+        bullets: [
+          'Working alone, built a PoC for text in several Indian languages (English, Hindi, Gujarati, Bengali, Tamil, Telugu, Kannada and more): a text detector, a script classifier and a recognizer per language. It reached about 90% word-level accuracy on clean images, measured against ground-truth words. The business did not need it at the time, so it was dropped and never shipped.',
+        ],
+      },
     ],
-    tech: ['OCR', 'Deepfake Detection', 'ONNX', 'Docker', 'Azure', 'Quantization'],
+    tech: ['Computer Vision', 'OCR', 'YOLO', 'ONNX', 'Deepfake Detection', 'Docker', 'LoRA / QLoRA', 'Hugging Face', 'PaddleOCR'],
   },
   {
     role: 'Research Intern',
     company: 'TSS Consultancy Pvt Ltd',
     period: '11/2022 — 08/2023',
     location: 'Remote',
-    bullets: [
-      'Developed AI solutions across NLP and Computer Vision — sentiment analysis, NER, face matching and automated data extraction using Azure OpenAI.',
-      'Built data pipelines and productionized models, collaborating with research and engineering teams for scalable, real-world deployment.',
+    summary:
+      'Prototyped NLP and computer-vision solutions with Azure OpenAI and built the data pipelines to move them toward production.',
+    sections: [
+      {
+        bullets: [
+          'Prototyped AI solutions across NLP and computer vision: sentiment analysis, named-entity recognition (NER), face matching and automated data extraction, using Azure OpenAI.',
+          'Built data pipelines and worked with the research and engineering teams to move models from prototype to production.',
+        ],
+      },
     ],
     tech: ['NLP', 'NER', 'Azure OpenAI', 'Siamese Networks', 'Python'],
   },

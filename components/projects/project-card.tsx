@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { ArrowUpRight } from 'lucide-react';
-import { Project } from '@/lib/data';
+import { Project, demoLabel } from '@/lib/data';
 import { SystemDiagram } from '@/components/diagrams/system-diagram';
 import { Reveal } from '@/components/motion';
 
@@ -66,7 +66,7 @@ export function ProjectCard({ project }: { project: Project }) {
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-1 text-sm font-medium text-foreground transition hover:text-primary"
               >
-                Live demo
+                {demoLabel(project.demoUrl)}
                 <ArrowUpRight className="h-4 w-4" />
               </a>
             )}
