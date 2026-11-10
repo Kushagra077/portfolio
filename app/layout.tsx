@@ -26,7 +26,21 @@ const spaceMono = Space_Mono({
 });
 
 export const metadata = {
+  metadataBase: new URL('https://www.kushagrapandya.in'),
   title: 'Kushagra Pandya — AI Engineer',
+  openGraph: {
+    type: 'website',
+    siteName: 'Kushagra Pandya',
+    title: 'Kushagra Pandya — AI Engineer',
+    description:
+      'AI engineer building computer-vision, agentic and LLM systems, from notebook to deployment.',
+  },
+  twitter: {
+    card: 'summary',
+    title: 'Kushagra Pandya — AI Engineer',
+    description:
+      'AI engineer building computer-vision, agentic and LLM systems, from notebook to deployment.',
+  },
   description:
     'Kushagra Pandya is an AI/ML Engineer building production AI systems — agentic pipelines, LLM & RAG applications, and computer-vision models.',
   verification: {

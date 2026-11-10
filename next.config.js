@@ -5,9 +5,6 @@ const nextConfig = {
     unoptimized: true,
     domains: ['images.unsplash.com']
   },
-  typescript: {
-    ignoreBuildErrors: true
-  },
   eslint: {
     ignoreDuringBuilds: true
   }

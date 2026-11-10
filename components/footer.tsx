@@ -18,7 +18,7 @@ export function Footer() {
       </div>
       <div className="container pb-8">
         <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-muted-foreground/70">
-          © {new Date().getFullYear()} {site.name}
+          © <span suppressHydrationWarning>{new Date().getFullYear()}</span> {site.name}
         </p>
       </div>
     </footer>
